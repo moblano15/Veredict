@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veredict - Reviews de Productos Informáticos</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Modal de autenticación -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <img src="./imagenes/logo2.png" alt="Veredict" class="logo-img" style="width: 150px; height: 120px;">
+                <h2>Bienvenido a Veredict</h2>
+            </div>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Iniciar Sesión</div>
+                <div class="auth-tab" data-tab="register">Registrarse</div>
+            </div>
+            
+            <form id="login-form" class="auth-form active" method="POST" action="login.php">
+                <div class="form-group">
+                    <label for="login-email">Correo electrónico</label>
+                    <input type="email" id="login-email" name="email" class="form-control" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" name="password" class="form-control" placeholder="Tu contraseña" required>
+                </div>
+                
+                <button type="submit" class="btn" style="width: 100%;">Iniciar Sesión</button>
+            </form>
+            
+            <form id="register-form" class="auth-form" method="POST" action="register.php">
+                <div class="form-group">
+                    <label for="register-name">Nombre completo</label>
+                    <input type="text" id="register-name" name="name" class="form-control" placeholder="Tu nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">Correo electrónico</label>
+                    <input type="email" id="register-email" name="email" class="form-control" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <input type="password" id="register-password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" required>
+                </div>
+                
+                <button type="submit" class="btn" style="width: 100%;">Registrarse</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header y navegación -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <img src="./imagenes/logo2.png" alt="Veredict" class="logo-img" style="width: 150px; height: 120px;">
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-section="inicio">Inicio</a></li>
+                        <li><a href="#" class="nav-link" data-section="busqueda">Búsqueda</a></li>
+                        <li><a href="#" class="nav-link" data-section="crear">Crear</a></li>
+                        <li><a href="#" class="nav-link" data-section="perfil">Perfil</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                        <span class="user-name">Hola, <?php echo $_SESSION['user_name']; ?></span>
+                        <div class="user-avatar" id="user-avatar">
+                            <img src="<?php echo $_SESSION['user_avatar'] ?? 'https://via.placeholder.com/40'; ?>" alt="Usuario">
+                        </div>
+                        <a href="logout.php" id="logout-link">Cerrar Sesión</a>
+                    <?php else: ?>
+                        <a href="#" id="auth-link">Iniciar Sesión</a>
+                        <div class="user-avatar" id="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="Usuario">
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <div class="container">
+            <!-- Sección Inicio -->
+            <section id="inicio" class="section active">
+                <h2>Opiniones Recientes</h2>
+                <?php include 'get_reviews.php'; ?>
+            </section>
+
+            <!-- Sección Búsqueda -->
+            <section id="busqueda" class="section">
+                <h2>Buscar Componentes</h2>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Buscar componentes, marcas, modelos...">
+                    <button class="search-btn" id="search-btn">Buscar</button>
+                </div>
+                
+                <div class="filter-options">
+                    <div class="filter-btn active" data-filter="all">Todos</div>
+                    <div class="filter-btn" data-filter="cpu">CPU</div>
+                    <div class="filter-btn" data-filter="gpu">GPU</div>
+                    <div class="filter-btn" data-filter="ram">RAM</div>
+                    <div class="filter-btn" data-filter="motherboard">Placa Base</div>
+                    <div class="filter-btn" data-filter="storage">Almacenamiento</div>
+                </div>
+                
+                <h3>Resultados de búsqueda</h3>
+                <div id="search-results">
+                    <!-- Los resultados de búsqueda se cargarán aquí -->
+                </div>
+            </section>
+
+            <!-- Sección Crear -->
+            <section id="crear" class="section">
+                <h2>Crear Nueva Opinión</h2>
+                <div class="form-container">
+                    <form id="nueva-opinion" method="POST" action="guardar_review.php">
+                        <div class="form-group">
+                            <label for="componente">Componente</label>
+                            <input type="text" id="componente" name="producto" class="form-control" placeholder="Ej: NVIDIA RTX 4070" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="categoria">Categoría</label>
+                            <select id="categoria" name="categoria" class="form-control" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="cpu">CPU/Procesador</option>
+                                <option value="gpu">GPU/Tarjeta Gráfica</option>
+                                <option value="ram">RAM/Memoria</option>
+                                <option value="motherboard">Placa Base</option>
+                                <option value="storage">Almacenamiento</option>
+                                <option value="cooling">Refrigeración</option>
+                                <option value="psu">Fuente de Alimentación</option>
+                                <option value="case">Caja/Gabinete</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="valoracion">Valoración</label>
+                            <select id="valoracion" name="valoracion" class="form-control" required>
+                                <option value="">Selecciona una valoración</option>
+                                <option value="5">★★★★★ - Excelente</option>
+                                <option value="4">★★★★☆ - Muy Bueno</option>
+                                <option value="3">★★★☆☆ - Bueno</option>
+                                <option value="2">★★☆☆☆ - Regular</option>
+                                <option value="1">★☆☆☆☆ - Malo</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="titulo">Título de la opinión</label>
+                            <input type="text" id="titulo" name="titulo" class="form-control" placeholder="Un título descriptivo para tu opinión" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contenido">Tu opinión</label>
+                            <textarea id="contenido" name="review" class="form-control" placeholder="Describe tu experiencia con el componente, puntos fuertes, débiles, etc." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn">Publicar Opinión</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Sección Perfil -->
+            <section id="perfil" class="section">
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <img src="<?php echo $_SESSION['user_avatar'] ?? 'https://via.placeholder.com/100'; ?>" alt="Usuario" id="profile-avatar">
+                        </div>
+                        <div class="profile-info">
+                            <h1 id="profile-name"><?php echo $_SESSION['user_name']; ?></h1>
+                            <p id="profile-bio">Miembro de Veredict</p>
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <div class="stat-value" id="stat-posts"><?php echo getUserPostCount($_SESSION['user_id']); ?></div>
+                                    <div class="stat-label">Opiniones</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value" id="stat-likes"><?php echo getUserLikesCount($_SESSION['user_id']); ?></div>
+                                    <div class="stat-label">Me gusta</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value" id="stat-followers">0</div>
+                                    <div class="stat-label">Seguidores</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2>Tus Opiniones</h2>
+                    <div id="user-posts">
+                        <?php include 'get_user_reviews.php'; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="not-logged-in">
+                        <h2>Perfil</h2>
+                        <p>Inicia sesión para ver tu perfil y crear opiniones.</p>
+                        <button id="login-profile-btn" class="btn">Iniciar Sesión</button>
+                    </div>
+                <?php endif; ?>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Veredict - Tu red social de opiniones sobre componentes de ordenador &copy; 2023</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
