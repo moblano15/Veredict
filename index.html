@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veredict - Reviews de Productos Informáticos</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Modal de autenticación -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="/static/imag/logo2.png" alt="Veredict" class="logo-img">
+            </div>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Iniciar Sesión</div>
+                <div class="auth-tab" data-tab="register">Registrarse</div>
+            </div>
+            <form id="login-form" class="auth-form active">
+                <div class="form-group">
+                    <label for="login-email">Correo electrónico</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="Tu contraseña" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Iniciar Sesión</button>
+            </form>
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label for="register-name">Nombre completo</label>
+                    <input type="text" id="register-name" class="form-control" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Correo electrónico</label>
+                    <input type="email" id="register-email" class="form-control" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <input type="password" id="register-password" class="form-control" placeholder="Mínimo 6 caracteres" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Registrarse</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de compartir -->
+    <div id="share-modal" class="share-modal">
+        <div class="share-modal-content">
+            <div class="share-modal-header">
+                <div class="share-modal-title">Compartir publicación</div>
+                <button class="close-share-modal">&times;</button>
+            </div>
+            <div class="share-options">
+                <div class="share-option" data-share-type="facebook">
+                    <i>📘</i>
+                    <span>Facebook</span>
+                </div>
+                <div class="share-option" data-share-type="twitter">
+                    <i>🐦</i>
+                    <span>Twitter</span>
+                </div>
+                <div class="share-option" data-share-type="linkedin">
+                    <i>💼</i>
+                    <span>LinkedIn</span>
+                </div>
+                <div class="share-option" data-share-type="whatsapp">
+                    <i>📱</i>
+                    <span>WhatsApp</span>
+                </div>
+                <div class="share-option" data-share-type="email">
+                    <i>✉️</i>
+                    <span>Email</span>
+                </div>
+            </div>
+            <div class="share-link-container">
+                <input type="text" class="share-link" id="share-link" readonly>
+                <button class="copy-link-btn" id="copy-link-btn">Copiar</button>
+            </div>
+            <div class="copy-success" id="copy-success">¡Enlace copiado al portapapeles!</div>
+        </div>
+    </div>
+
+    <!-- Header y navegación -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <img src="/static/imag/logo2.png" alt="Veredict" class="logo-img">
+                
+                <!-- Menú hamburguesa -->
+                <div class="menu-toggle" id="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <nav id="main-nav">
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-section="inicio">Inicio</a></li>
+                        <li><a href="#" class="nav-link" data-section="busqueda">Búsqueda</a></li>
+                        <li><a href="#" class="nav-link" data-section="crear">Crear</a></li>
+                        <li><a href="#" class="nav-link" data-section="perfil">Perfil</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <a href="#" id="auth-link">Iniciar Sesión</a>
+                    <div class="user-avatar" id="user-avatar">
+                        <img src="https://via.placeholder.com/40" alt="Usuario">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <div class="container">
+            <!-- Sección Inicio -->
+            <section id="inicio" class="section active">
+                <h2>Opiniones Recientes</h2>
+                
+                <!-- Mensaje informativo -->
+                <div class="info-message">
+                    <p><strong>Resumen de componentes más populares</strong> - En esta sección encontrarás las opiniones más recientes sobre CPU, GPU y RAM. Para ver todos los componentes disponibles, visita la sección de <a href="#" class="nav-link" data-section="busqueda" style="color: orangered; text-decoration: underline;">Búsqueda</a>.</p>
+                </div>
+                
+                <div id="posts-container">
+                    <!-- Las publicaciones se cargarán aquí dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección Búsqueda -->
+            <section id="busqueda" class="section">
+                <h2>Buscar Componentes</h2>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Buscar componentes, marcas, modelos...">
+                    <button class="search-btn" id="search-btn">Buscar</button>
+                </div>
+                
+                <!-- Botones de categorías para búsqueda -->
+                <div class="category-buttons">
+                    <button class="category-btn active" data-category="all">Todos</button>
+                    <button class="category-btn" data-category="cpu">CPU</button>
+                    <button class="category-btn" data-category="gpu">GPU</button>
+                    <button class="category-btn" data-category="ram">RAM</button>
+                    <button class="category-btn" data-category="refrigeracion">Refrigeración Líquida</button>
+                    <button class="category-btn" data-category="alimentacion">Fuente de Alimentación</button>
+                    <button class="category-btn" data-category="motherboard">Placa Base</button>
+                    <button class="category-btn" data-category="storage">Almacenamiento</button>
+                </div>
+                
+                <h3>Resultados de búsqueda</h3>
+                <div id="search-results">
+                    <!-- Los resultados se cargarán aquí dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección Crear -->
+            <section id="crear" class="section">
+                <h2>Crear Nueva Opinión</h2>
+                <div class="form-container">
+                    <form id="nueva-opinion">
+                        <div class="form-group">
+                            <label for="componente">Componentes</label>
+                            <input type="text" id="componente" class="form-control" placeholder="Ej: NVIDIA RTX 4070" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria">Categoría</label>
+                            <select id="categoria" class="form-control" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="cpu">CPU/Procesador</option>
+                                <option value="gpu">GPU/Tarjeta Gráfica</option>
+                                <option value="ram">RAM/Memoria</option>
+                                <option value="motherboard">Placa Base</option>
+                                <option value="storage">Almacenamiento</option>
+                                <option value="cooling">Refrigeración</option>
+                                <option value="psu">Fuente de Alimentación</option>
+                                <option value="case">Caja/Gabinete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="valoracion">Valoración</label>
+                            <select id="valoracion" class="form-control" required>
+                                <option value="">Selecciona una valoración</option>
+                                <option value="5">★★★★★ - Excelente</option>
+                                <option value="4">★★★★☆ - Muy Bueno</option>
+                                <option value="3">★★★☆☆ - Bueno</option>
+                                <option value="2">★★☆☆☆ - Regular</option>
+                                <option value="1">★☆☆☆☆ - Malo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="titulo">Título de la opinión</label>
+                            <input type="text" id="titulo" class="form-control" placeholder="Un título descriptivo para tu opinión" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contenido">Tu opinión</label>
+                            <textarea id="contenido" class="form-control" placeholder="Describe tu experiencia con el componente, puntos fuertes, débiles, etc." required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Publicar Opinión</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Sección Perfil -->
+            <section id="perfil" class="section">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="https://i.pravatar.cc/100" alt="Usuario" id="profile-avatar">
+                    </div>
+                    <div class="profile-info">
+                        <h1 id="profile-name">Inicia sesión para ver tu perfil</h1>
+                        <p id="profile-bio"></p>
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="stat-posts">0</div>
+                                <div class="stat-label">Opiniones</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="stat-likes">0</div>
+                                <div class="stat-label">Me gusta</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="stat-followers">0</div>
+                                <div class="stat-label">Seguidores</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2 id="profile-posts-title">Tus Opiniones</h2>
+                <div id="user-posts">
+                    <p>Inicia sesión para ver y crear tus opiniones.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Chatbox -->
+    <div class="chatbox-container">
+        <div class="chatbox-toggle" id="chatbox-toggle">
+            <i>💬</i>
+        </div>
+        <div class="chatbox" id="chatbox">
+            <div class="chatbox-header">
+                <div class="chatbox-title">Chat de Veredict</div>
+                <button class="close-chatbox" id="close-chatbox">&times;</button>
+            </div>
+            <div class="chatbox-messages" id="chatbox-messages">
+                <div class="message received">
+                    <div class="message-sender">Soporte Veredict</div>
+                    <div class="message-text">¡Hola! ¿En qué podemos ayudarte hoy?</div>
+                </div>
+            </div>
+            <div class="chatbox-input">
+                <input type="text" id="chatbox-input" placeholder="Escribe tu mensaje...">
+                <button class="send-message" id="send-message">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Veredict - Tu red social de reviews sobre componentes de ordenador &copy; 2025</p>
+        </div>
+    </footer>
+
+    <script>
+        // Estado de la aplicación
+        const appState = {
+            currentUser: null,
+            posts: [
+                // CPU (3 ejemplos)
+                {
+                    id: 1,
+                    userId: 1,
+                    userName: "Carlos Rodríguez",
+                    userAvatar: "https://i.pravatar.cc/40?img=1",
+                    component: "AMD Ryzen 7 7800X3D",
+                    category: "cpu",
+                    rating: 5,
+                    title: "AMD Ryzen 7 7800X3D - Bestia para gaming",
+                    content: "Increíble procesador para gaming. La tecnología 3D V-Cache hace maravillas en juegos que dependen mucho de la caché. Temperaturas controladas con buen refrigerador. Consumo eficiente para el rendimiento que ofrece.",
+                    likes: 45,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 2 horas"
+                },
+                {
+                    id: 2,
+                    userId: 2,
+                    userName: "Ana Martínez",
+                    userAvatar: "https://i.pravatar.cc/40?img=2",
+                    component: "Intel Core i9-14900K",
+                    category: "cpu",
+                    rating: 4,
+                    title: "Intel Core i9-14900K - Potencia extrema",
+                    content: "Rendimiento brutal en aplicaciones de productividad y gaming. Necesita refrigeración líquida de alta gama para mantener temperaturas bajo control. Consumo elevado pero justificado por el rendimiento.",
+                    likes: 32,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+                {
+                    id: 3,
+                    userId: 3,
+                    userName: "Miguel Torres",
+                    userAvatar: "https://i.pravatar.cc/40?img=3",
+                    component: "AMD Ryzen 5 7600X",
+                    category: "cpu",
+                    rating: 5,
+                    title: "AMD Ryzen 5 7600X - Excelente relación calidad-precio",
+                    content: "Perfecto para gaming en 1080p y 1440p. Bajo consumo y temperaturas manejables. Ideal para builds de presupuesto medio sin sacrificar rendimiento.",
+                    likes: 28,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 3 días"
+                },
+
+                // GPU (4 ejemplos)
+                {
+                    id: 4,
+                    userId: 4,
+                    userName: "Laura Sánchez",
+                    userAvatar: "https://i.pravatar.cc/40?img=4",
+                    component: "NVIDIA RTX 4090",
+                    category: "gpu",
+                    rating: 5,
+                    title: "NVIDIA RTX 4090 - Monstruo de rendimiento",
+                    content: "La mejor tarjeta gráfica del mercado. Maneja cualquier juego en 4K con tasas de refresco altísimas. DLSS 3 es revolucionario. Consumo elevado pero esperable para este nivel de rendimiento.",
+                    likes: 67,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 4 horas"
+                },
+                {
+                    id: 5,
+                    userId: 5,
+                    userName: "David López",
+                    userAvatar: "https://i.pravatar.cc/40?img=5",
+                    component: "AMD Radeon RX 7900 XTX",
+                    category: "gpu",
+                    rating: 4,
+                    title: "AMD Radeon RX 7900 XTX - Competencia seria",
+                    content: "Excelente alternativa a las RTX 4000. Buen rendimiento en rasterizado, Ray Tracing mejorado. Drivers estables y buen soporte de software.",
+                    likes: 41,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+                {
+                    id: 6,
+                    userId: 6,
+                    userName: "Sofía García",
+                    userAvatar: "https://i.pravatar.cc/40?img=6",
+                    component: "NVIDIA RTX 4070 Ti",
+                    category: "gpu",
+                    rating: 5,
+                    title: "NVIDIA RTX 4070 Ti - Perfecta para 1440p",
+                    content: "Rendimiento excelente en 1440p, DLSS 3 funciona de maravilla. Consumo eficiente y temperaturas controladas. Relación calidad-precio muy buena.",
+                    likes: 53,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 2 días"
+                },
+                {
+                    id: 7,
+                    userId: 7,
+                    userName: "Javier Ruiz",
+                    userAvatar: "https://i.pravatar.cc/40?img=7",
+                    component: "AMD Radeon RX 7800 XT",
+                    category: "gpu",
+                    rating: 4,
+                    title: "AMD Radeon RX 7800 XT - Mejor opción mid-range",
+                    content: "Excelente rendimiento por el precio. Compite directamente con RTX 4070. Buen software Adrenalin y características completas.",
+                    likes: 38,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 3 días"
+                },
+
+                // RAM (5 ejemplos)
+                {
+                    id: 8,
+                    userId: 8,
+                    userName: "Elena Morales",
+                    userAvatar: "https://i.pravatar.cc/40?img=8",
+                    component: "Corsair Vengeance RGB 32GB 6000MHz CL30",
+                    category: "ram",
+                    rating: 5,
+                    title: "Corsair Vengeance RGB 32GB 6000MHz CL30",
+                    content: "Excelentes velocidades, estabilidad perfecta. RGB espectacular y software iCUE muy completo. Perfecta para Ryzen 7000.",
+                    likes: 29,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 5 horas"
+                },
+                {
+                    id: 9,
+                    userId: 9,
+                    userName: "Roberto Jiménez",
+                    userAvatar: "https://i.pravatar.cc/40?img=9",
+                    component: "G.Skill Trident Z5 RGB 64GB 6400MHz CL32",
+                    category: "ram",
+                    rating: 5,
+                    title: "G.Skill Trident Z5 RGB 64GB 6400MHz CL32",
+                    content: "Potencia bruta para estaciones de trabajo. Estabilidad excelente incluso a altas velocidades. Diseño premium y buena disipación.",
+                    likes: 24,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+                {
+                    id: 10,
+                    userId: 10,
+                    userName: "Carmen Díaz",
+                    userAvatar: "https://i.pravatar.cc/40?img=10",
+                    component: "Kingston Fury Beast 32GB 5600MHz CL36",
+                    category: "ram",
+                    rating: 4,
+                    title: "Kingston Fury Beast 32GB 5600MHz CL36",
+                    content: "Buena relación calidad-precio. Funciona perfectamente con Intel y AMD. Diseño discreto y buen rendimiento.",
+                    likes: 31,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 2 días"
+                },
+
+                // Refrigeración Líquida (5 ejemplos)
+                {
+                    id: 11,
+                    userId: 11,
+                    userName: "Pedro Martínez",
+                    userAvatar: "https://i.pravatar.cc/40?img=11",
+                    component: "Corsair iCUE H150i Elite CAPELLIX XT",
+                    category: "refrigeracion",
+                    rating: 5,
+                    title: "Corsair iCUE H150i Elite CAPELLIX XT - Excelente refrigeración",
+                    content: "Mantiene mi i9-14900K bajo 70°C en carga. RGB espectacular y software iCUE muy completo. Instalación sencilla.",
+                    likes: 42,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 6 horas"
+                },
+                {
+                    id: 12,
+                    userId: 12,
+                    userName: "Lucía Hernández",
+                    userAvatar: "https://i.pravatar.cc/40?img=12",
+                    component: "NZXT Kraken Z73 RGB",
+                    category: "refrigeracion",
+                    rating: 5,
+                    title: "NZXT Kraken Z73 RGB - Pantalla LCD increíble",
+                    content: "La pantalla LCD es un detalle espectacular. Rendimiento térmico excelente y muy silencioso. Software CAM fácil de usar.",
+                    likes: 38,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+
+                // Fuente de Alimentación (5 ejemplos)
+                {
+                    id: 13,
+                    userId: 13,
+                    userName: "Diego Navarro",
+                    userAvatar: "https://i.pravatar.cc/40?img=13",
+                    component: "Corsair RM1000x Shift",
+                    category: "alimentacion",
+                    rating: 5,
+                    title: "Corsair RM1000x Shift - Conexiones laterales geniales",
+                    content: "Las conexiones laterales facilitan mucho el cable management. Eficiencia 80 Plus Gold, completamente modular y silenciosa.",
+                    likes: 31,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 5 horas"
+                },
+                {
+                    id: 14,
+                    userId: 14,
+                    userName: "Patricia López",
+                    userAvatar: "https://i.pravatar.cc/40?img=14",
+                    component: "Seasonic Prime TX-1000",
+                    category: "alimentacion",
+                    rating: 5,
+                    title: "Seasonic Prime TX-1000 - Calidad suprema",
+                    content: "Eficiencia 80 Plus Titanium, la mejor del mercado. Construcción impecable y garantía de 12 años. Totalmente silenciosa.",
+                    likes: 26,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+
+                // Placas Base (5 ejemplos)
+                {
+                    id: 15,
+                    userId: 15,
+                    userName: "Cristina Ortega",
+                    userAvatar: "https://i.pravatar.cc/40?img=15",
+                    component: "ASUS ROG Strix X670E-E Gaming WiFi",
+                    category: "motherboard",
+                    rating: 5,
+                    title: "ASUS ROG Strix X670E-E - Para los más exigentes",
+                    content: "Características completas, excelente VRM y buen audio. BIOS muy completo y personalización RGB espectacular.",
+                    likes: 41,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 6 horas"
+                },
+                {
+                    id: 16,
+                    userId: 16,
+                    userName: "Gabriel Santos",
+                    userAvatar: "https://i.pravatar.cc/40?img=16",
+                    component: "MSI MPG B650 Carbon WiFi",
+                    category: "motherboard",
+                    rating: 4,
+                    title: "MSI MPG B650 Carbon - Mejor relación calidad-precio",
+                    content: "Excelente placa para Ryzen 7000. Buen VRM, WiFi 6E y características completas. BIOS fácil de usar.",
+                    likes: 37,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+
+                // Almacenamiento (5 ejemplos)
+                {
+                    id: 17,
+                    userId: 17,
+                    userName: "Ricardo Mora",
+                    userAvatar: "https://i.pravatar.cc/40?img=17",
+                    component: "Samsung 990 Pro 2TB NVMe SSD",
+                    category: "storage",
+                    rating: 5,
+                    title: "Samsung 990 Pro 2TB - El más rápido",
+                    content: "Velocidades increíbles, perfecto para sistema y juegos. Temperaturas controladas y gran durabilidad.",
+                    likes: 48,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 7 horas"
+                },
+                {
+                    id: 18,
+                    userId: 18,
+                    userName: "Beatriz Navarro",
+                    userAvatar: "https://i.pravatar.cc/40?img=18",
+                    component: "WD Black SN850X 4TB",
+                    category: "storage",
+                    rating: 5,
+                    title: "WD Black SN850X 4TB - Capacidad y velocidad",
+                    content: "Enorme capacidad con velocidades de elite. Perfecto para almacenar muchos juegos y proyectos.",
+                    likes: 36,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                }
+            ],
+            users: [
+                {
+                    id: 1,
+                    name: "Carlos Rodríguez",
+                    email: "carlos@ejemplo.com",
+                    avatar: "https://i.pravatar.cc/40?img=1",
+                    bio: "Entusiasta del hardware y overclocking",
+                    posts: 8,
+                    likes: 156,
+                    followers: 342
+                },
+                {
+                    id: 2,
+                    name: "Ana Martínez",
+                    email: "ana@ejemplo.com",
+                    avatar: "https://i.pravatar.cc/40?img=2",
+                    bio: "Especialista en builds gaming",
+                    posts: 12,
+                    likes: 289,
+                    followers: 527
+                }
+            ],
+            chatMessages: [
+                {
+                    sender: "Soporte Veredict",
+                    text: "¡Hola! ¿En qué podemos ayudarte hoy?",
+                    type: "received",
+                    time: "10:00 AM"
+                }
+            ]
+        };
+
+        // Elementos del DOM
+        const authModal = document.getElementById('auth-modal');
+        const authLink = document.getElementById('auth-link');
+        const userAvatar = document.getElementById('user-avatar');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const searchResults = document.getElementById('search-results');
+        const nuevaOpinionForm = document.getElementById('nueva-opinion');
+        const profileName = document.getElementById('profile-name');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileBio = document.getElementById('profile-bio');
+        const statPosts = document.getElementById('stat-posts');
+        const statLikes = document.getElementById('stat-likes');
+        const statFollowers = document.getElementById('stat-followers');
+        const userPosts = document.getElementById('user-posts');
+        const profilePostsTitle = document.getElementById('profile-posts-title');
+        const postsContainer = document.getElementById('posts-container');
+        
+        // Elementos del modal de compartir
+        const shareModal = document.getElementById('share-modal');
+        const closeShareModal = document.querySelector('.close-share-modal');
+        const shareLink = document.getElementById('share-link');
+        const copyLinkBtn = document.getElementById('copy-link-btn');
+        const copySuccess = document.getElementById('copy-success');
+        const shareOptions = document.querySelectorAll('.share-option');
+
+        // Menú hamburguesa
+        const menuToggle = document.getElementById('menu-toggle');
+        const mainNav = document.getElementById('main-nav');
+
+        // Chatbox
+        const chatboxToggle = document.getElementById('chatbox-toggle');
+        const chatbox = document.getElementById('chatbox');
+        const closeChatbox = document.getElementById('close-chatbox');
+        const chatboxMessages = document.getElementById('chatbox-messages');
+        const chatboxInput = document.getElementById('chatbox-input');
+        const sendMessage = document.getElementById('send-message');
+
+        // Botones de categorías
+        const categoryButtons = document.querySelectorAll('.category-btn');
+
+        // Funciones de autenticación
+        function openAuthModal() {
+            authModal.style.display = 'flex';
+        }
+
+        function closeAuthModal() {
+            authModal.style.display = 'none';
+        }
+
+        function switchAuthTab(tabName) {
+            authTabs.forEach(tab => {
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            authForms.forEach(form => {
+                if (form.id === `${tabName}-form`) {
+                    form.classList.add('active');
+                } else {
+                    form.classList.remove('active');
+                }
+            });
+        }
+
+        function loginUser(email, password) {
+            // Simulación de autenticación
+            const user = appState.users.find(u => u.email === email);
+            if (user && password === "123456") { // Contraseña simple para demo
+                appState.currentUser = user;
+                updateUIForUser();
+                closeAuthModal();
+                return true;
+            }
+            return false;
+        }
+
+        function registerUser(name, email, password) {
+            // Generar avatar aleatorio
+            const randomId = Math.floor(Math.random() * 70) + 1;
+            
+            // Simulación de registro
+            const newUser = {
+                id: appState.users.length + 1,
+                name,
+                email,
+                avatar: `https://i.pravatar.cc/40?img=${randomId}`,
+                bio: "Nuevo usuario de Veredict",
+                posts: 0,
+                likes: 0,
+                followers: 0
+            };
+            
+            appState.users.push(newUser);
+            appState.currentUser = newUser;
+            updateUIForUser();
+            closeAuthModal();
+            return true;
+        }
+
+        function logoutUser() {
+            appState.currentUser = null;
+            updateUIForUser();
+        }
+
+        function updateUIForUser() {
+            if (appState.currentUser) {
+                authLink.textContent = "Cerrar Sesión";
+                userAvatar.querySelector('img').src = appState.currentUser.avatar;
+                
+                // Actualizar perfil
+                profileName.textContent = appState.currentUser.name;
+                profileAvatar.src = appState.currentUser.avatar;
+                profileBio.textContent = appState.currentUser.bio;
+                statPosts.textContent = appState.currentUser.posts;
+                statLikes.textContent = appState.currentUser.likes;
+                statFollowers.textContent = appState.currentUser.followers;
+                
+                // Mostrar publicaciones del usuario
+                const userPostsData = appState.posts.filter(post => post.userId === appState.currentUser.id);
+                if (userPostsData.length > 0) {
+                    profilePostsTitle.textContent = "Tus Opiniones";
+                    userPosts.innerHTML = userPostsData.map(post => `
+                        <div class="post-card">
+                            <div class="post-header">
+                                <div class="post-avatar">
+                                    <img src="${post.userAvatar}" alt="Usuario">
+                                </div>
+                                <div>
+                                    <div class="post-user">${post.userName}</div>
+                                    <div class="post-time">${post.time}</div>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                <span class="component-tag">${post.category.toUpperCase()}</span>
+                                <h3>${post.title}</h3>
+                                <div class="rating">${'★'.repeat(post.rating)}${'☆'.repeat(5-post.rating)}</div>
+                                <p>${post.content}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    profilePostsTitle.textContent = "Tus Opiniones";
+                    userPosts.innerHTML = '<p>Aún no has publicado ninguna opinión. <a href="#" class="nav-link" data-section="crear">¡Crea tu primera opinión!</a></p>';
+                }
+            } else {
+                authLink.textContent = "Iniciar Sesión";
+                userAvatar.querySelector('img').src = "https://via.placeholder.com/40";
+                
+                // Restablecer perfil
+                profileName.textContent = "Inicia sesión para ver tu perfil";
+                profileAvatar.src = "https://i.pravatar.cc/100";
+                profileBio.textContent = "";
+                statPosts.textContent = "0";
+                statLikes.textContent = "0";
+                statFollowers.textContent = "0";
+                profilePostsTitle.textContent = "Tus Opiniones";
+                userPosts.innerHTML = '<p>Inicia sesión para ver y crear tus opiniones.</p>';
+            }
+        }
+
+        // Funciones de publicaciones
+        function renderPosts(posts = appState.posts, isSearchPage = false) {
+            if (postsContainer) {
+                let postsToRender = posts;
+                
+                // Si estamos en la página de inicio, mostrar solo CPU, GPU y RAM
+                if (!isSearchPage) {
+                    postsToRender = posts.filter(post => 
+                        post.category === 'cpu' || 
+                        post.category === 'gpu' || 
+                        post.category === 'ram'
+                    );
+                }
+                
+                postsContainer.innerHTML = postsToRender.map(post => `
+                    <div class="post-card" data-post-id="${post.id}" data-category="${post.category}">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                <img src="${post.userAvatar}" alt="Usuario">
+                            </div>
+                            <div>
+                                <div class="post-user">${post.userName}</div>
+                                <div class="post-time">${post.time}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <span class="component-tag">${post.category.toUpperCase()}</span>
+                            <h3>${post.title}</h3>
+                            <div class="rating">${'★'.repeat(post.rating)}${'☆'.repeat(5-post.rating)}</div>
+                            <p>${post.content}</p>
+                        </div>
+                        <div class="post-actions">
+                            <div class="post-action" data-action="like">
+                                <i>👍</i>
+                                <span class="like-count">${post.likes}</span>
+                            </div>
+                            <div class="post-action" data-action="comment">
+                                <i>💬</i>
+                                <span>Comentar</span>
+                            </div>
+                            <div class="post-action" data-action="share">
+                                <i>🔄</i>
+                                <span>Compartir</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderSearchResults(posts = appState.posts, searchTerm = '', category = 'all') {
+            if (searchResults) {
+                let filteredPosts = posts;
+                
+                // Filtrar por categoría si no es "all"
+                if (category !== 'all') {
+                    filteredPosts = filteredPosts.filter(post => post.category === category);
+                }
+                
+                // Filtrar por término de búsqueda si existe
+                if (searchTerm) {
+                    const searchLower = searchTerm.toLowerCase();
+                    filteredPosts = filteredPosts.filter(post => 
+                        post.component.toLowerCase().includes(searchLower) ||
+                        post.title.toLowerCase().includes(searchLower) ||
+                        post.content.toLowerCase().includes(searchLower) ||
+                        post.userName.toLowerCase().includes(searchLower)
+                    );
+                }
+                
+                if (filteredPosts.length > 0) {
+                    searchResults.innerHTML = filteredPosts.map(post => `
+                        <div class="post-card" data-post-id="${post.id}" data-category="${post.category}">
+                            <div class="post-header">
+                                <div class="post-avatar">
+                                    <img src="${post.userAvatar}" alt="Usuario">
+                                </div>
+                                <div>
+                                    <div class="post-user">${post.userName}</div>
+                                    <div class="post-time">${post.time}</div>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                <span class="component-tag">${post.category.toUpperCase()}</span>
+                                <h3>${post.title}</h3>
+                                <div class="rating">${'★'.repeat(post.rating)}${'☆'.repeat(5-post.rating)}</div>
+                                <p>${post.content}</p>
+                            </div>
+                            <div class="post-actions">
+                                <div class="post-action" data-action="like">
+                                    <i>👍</i>
+                                    <span class="like-count">${post.likes}</span>
+                                </div>
+                                <div class="post-action" data-action="comment">
+                                    <i>💬</i>
+                                    <span>Comentar</span>
+                                </div>
+                                <div class="post-action" data-action="share">
+                                    <i>🔄</i>
+                                    <span>Compartir</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    searchResults.innerHTML = `
+                        <div class="info-message">
+                            <p>No se encontraron resultados para tu búsqueda. Intenta con otros términos o categorías.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function filterPostsByCategory(category, isSearchPage = false) {
+            if (category === 'all') {
+                if (isSearchPage) {
+                    renderSearchResults(appState.posts, searchInput.value, 'all');
+                } else {
+                    renderPosts(appState.posts, false);
+                }
+            } else {
+                if (isSearchPage) {
+                    renderSearchResults(appState.posts, searchInput.value, category);
+                } else {
+                    const filteredPosts = appState.posts.filter(post => post.category === category);
+                    renderPosts(filteredPosts, false);
+                }
+            }
+        }
+
+        // Funciones de chatbox
+        function toggleChatbox() {
+            chatbox.classList.toggle('active');
+        }
+
+        function addMessage(sender, text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                ${type === 'received' ? `<div class="message-sender">${sender}</div>` : ''}
+                <div class="message-text">${text}</div>
+            `;
+            chatboxMessages.appendChild(messageDiv);
+            chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const message = chatboxInput.value.trim();
+            if (message) {
+                addMessage(appState.currentUser ? appState.currentUser.name : "Tú", message, "sent");
+                chatboxInput.value = '';
+                
+                // Simular respuesta automática después de 1 segundo
+                setTimeout(() => {
+                    const responses = [
+                        "¡Interesante! ¿Podrías contarme más detalles?",
+                        "Gracias por tu mensaje. ¿En qué más puedo ayudarte?",
+                        "Entiendo. ¿Tienes alguna pregunta específica sobre componentes?",
+                        "¡Excelente pregunta! Déjame consultar esa información."
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addMessage("Soporte Veredict", randomResponse, "received");
+                }, 1000);
+            }
+        }
+
+        // Event Listeners
+        authLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (appState.currentUser) {
+                logoutUser();
+            } else {
+                openAuthModal();
+            }
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        window.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                closeAuthModal();
+            }
+            if (e.target === shareModal) {
+                closeShareModalFunc();
+            }
+        });
+
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                switchAuthTab(this.dataset.tab);
+            });
+        });
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (loginUser(email, password)) {
+                alert('¡Inicio de sesión exitoso!');
+            } else {
+                alert('Credenciales incorrectas. Usa cualquier email y contraseña "123456" para demo.');
+            }
+        });
+
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            if (password.length < 6) {
+                alert('La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+            
+            if (registerUser(name, email, password)) {
+                alert('¡Registro exitoso!');
+            }
+        });
+
+        // Búsqueda
+        searchBtn.addEventListener('click', function() {
+            const searchTerm = searchInput.value.trim();
+            const activeCategory = document.querySelector('#busqueda .category-btn.active').dataset.category;
+            renderSearchResults(appState.posts, searchTerm, activeCategory);
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = searchInput.value.trim();
+                const activeCategory = document.querySelector('#busqueda .category-btn.active').dataset.category;
+                renderSearchResults(appState.posts, searchTerm, activeCategory);
+            }
+        });
+
+        // Navegación entre secciones
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remover clase active de todos los enlaces
+                document.querySelectorAll('.nav-link').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Añadir clase active al enlace clickeado
+                this.classList.add('active');
+                
+                // Ocultar todas las secciones
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Mostrar la sección correspondiente
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Si es la sección de inicio, mostrar solo CPU, GPU y RAM
+                if (sectionId === 'inicio') {
+                    renderPosts(appState.posts, false);
+                }
+                // Si es la sección de búsqueda, mostrar todos los componentes
+                else if (sectionId === 'busqueda') {
+                    renderSearchResults(appState.posts);
+                }
+                
+                // Cerrar menú en móvil
+                if (window.innerWidth <= 768) {
+                    mainNav.classList.remove('active');
+                }
+            });
+        });
+
+        // Botones de categorías
+        categoryButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Determinar si estamos en la página de búsqueda o inicio
+                const isSearchPage = document.getElementById('busqueda').classList.contains('active');
+                
+                if (isSearchPage) {
+                    // Para la página de búsqueda, actualizar solo los botones de búsqueda
+                    document.querySelectorAll('#busqueda .category-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const category = this.dataset.category;
+                    const searchTerm = searchInput.value.trim();
+                    renderSearchResults(appState.posts, searchTerm, category);
+                } else {
+                    // Para la página de inicio, actualizar solo los botones de inicio
+                    document.querySelectorAll('#inicio .category-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const category = this.dataset.category;
+                    filterPostsByCategory(category, false);
+                }
+            });
+        });
+
+        // Chatbox
+        chatboxToggle.addEventListener('click', toggleChatbox);
+        closeChatbox.addEventListener('click', toggleChatbox);
+        sendMessage.addEventListener('click', sendChatMessage);
+        chatboxInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        // Menú hamburguesa
+        menuToggle.addEventListener('click', function() {
+            mainNav.classList.toggle('active');
+        });
+
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+                mainNav.classList.remove('active');
+            }
+        });
+
+        // Inicialización
+        updateUIForUser();
+        renderPosts(appState.posts, false); // Inicialmente mostrar solo resumen en inicio
+        renderSearchResults(appState.posts); // Inicializar resultados de búsqueda
+    </script>
+</body>
+</html>

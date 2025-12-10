@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Post</title>
+</head>
+<body>
+    <form id="nueva-opinion" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="componente">Componentes</label>
+    <input type="text" id="componente" name="title" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="categoria">Categoría</label>
+    <select id="categoria" name="category" class="form-control" required>
+      <option value="">Selecciona una categoría</option>
+      <option value="cpu">CPU</option>
+      <option value="gpu">GPU</option>
+      <option value="ram">RAM</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="valoracion">Valoración</label>
+    <select id="valoracion" name="rating" class="form-control" required>
+      <option value="">Selecciona una valoración</option>
+      <option value="5">★★★★★</option>
+      <option value="4">★★★★☆</option>
+      <option value="3">★★★☆☆</option>
+      <option value="2">★★☆☆☆</option>
+      <option value="1">★☆☆☆☆</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="contenido">Tu opinión</label>
+    <textarea id="contenido" name="content" class="form-control" required></textarea>
+  </div>
+  <div class="form-group">
+    <label for="post-image">Imagen del componente</label>
+    <input type="file" id="post-image" name="image" accept="image/*" class="form-control">
+    <img id="post-preview" src="" alt="Preview Post" style="margin-top: 10px; width: 150px; display: none; border-radius: 12px;">
+  </div>
+  <button type="submit" class="btn">Publicar Opinión</button>
+</form>
+
+<script>
+const postImageInput = document.getElementById('post-image');
+const postPreview = document.getElementById('post-preview');
+
+postImageInput.addEventListener('change', () => {
+  const file = postImageInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      postPreview.src = e.target.result;
+      postPreview.style.display = 'block';
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+const postForm = document.getElementById('nueva-opinion');
+postForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(postForm);
+  const res = await fetch('/posts', { method: 'POST', body: formData });
+  const data = await res.json();
+  if (res.ok) {
+    alert('¡Post creado!');
+    loadPosts();  // función que recarga dinámicamente los posts
+  } else {
+    alert(data.error || 'Error al crear post');
+  }
+});
+</script>
+</body>
+</html>

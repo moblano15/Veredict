@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Avatars</title>
+</head>
+<body><form id="register-form" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="register-name">Nombre completo</label>
+    <input type="text" id="register-name" name="username" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="register-email">Correo electrónico</label>
+    <input type="email" id="register-email" name="email" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="register-password">Contraseña</label>
+    <input type="password" id="register-password" name="password" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label for="register-avatar">Avatar</label>
+    <input type="file" id="register-avatar" name="avatar" accept="image/*" class="form-control">
+    <img id="avatar-preview" src="https://via.placeholder.com/100" alt="Preview Avatar" style="margin-top: 10px; width: 80px; border-radius: 50%;">
+  </div>
+  <button type="submit" class="btn">Registrarse</button>
+</form>
+
+<script>
+const avatarInput = document.getElementById('register-avatar');
+const avatarPreview = document.getElementById('avatar-preview');
+
+avatarInput.addEventListener('change', () => {
+  const file = avatarInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      avatarPreview.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+// Registro con fetch
+const registerForm = document.getElementById('register-form');
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(registerForm);
+  const res = await fetch('/auth/register', { method: 'POST', body: formData });
+  const data = await res.json();
+  if (res.ok) alert('¡Registro exitoso!');
+  else alert(data.error || 'Error al registrar');
+});
+</script>
+    
+</body>
+</html>

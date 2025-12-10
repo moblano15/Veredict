@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Veredict</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f7fa; }
+        .header { background: #2c3e50; color: white; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .card { background: white; border-radius: 8px; padding: 20px; margin: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .stat-item { text-align: center; padding: 20px; background: #f8f9fa; border-radius: 6px; }
+        .stat-value { font-size: 2em; font-weight: bold; color: #3498db; }
+        .stat-label { color: #7f8c8d; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; }
+        .btn { display: inline-block; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; }
+        .btn:hover { background: #2980b9; }
+        .nav { display: flex; gap: 15px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🔐 Panel de Administración - Veredict</h1>
+            <p>Gestión de base de datos MySQL</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="nav">
+            <a href="http://localhost/phpmyadmin" target="_blank" class="btn">📊 phpMyAdmin</a>
+            <a href="/admin/dashboard" class="btn">🔄 Actualizar</a>
+            <a href="/" class="btn">🏠 Ir al Sitio</a>
+        </div>
+        
+        <div class="card">
+            <h2>📈 Estadísticas</h2>
+            <div id="stats" class="stats">
+                <!-- Las estadísticas se cargarán con JavaScript -->
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>👥 Usuarios Registrados</h2>
+            <div id="users-table">
+                <p>Cargando usuarios...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Cargar estadísticas
+        fetch('/admin/dashboard')
+            .then(r => r.json())
+            .then(data => {
+                if(data.status === 'ok') {
+                    const stats = data.stats;
+                    document.getElementById('stats').innerHTML = `
+                        <div class="stat-item">
+                            <div class="stat-value">${stats.users}</div>
+                            <div class="stat-label">Usuarios</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stats.posts}</div>
+                            <div class="stat-label">Publicaciones</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stats.comments}</div>
+                            <div class="stat-label">Comentarios</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stats.likes}</div>
+                            <div class="stat-label">Likes</div>
+                        </div>
+                    `;
+                }
+            });
+        
+        // Cargar usuarios
+        fetch('/admin/users')
+            .then(r => r.json())
+            .then(data => {
+                if(data.users) {
+                    let html = '<table>';
+                    html += '<tr><th>ID</th><th>Usuario</th><th>Email</th><th>Admin</th><th>Posts</th></tr>';
+                    data.users.forEach(user => {
+                        html += `<tr>
+                            <td>${user.id}</td>
+                            <td>${user.username}</td>
+                            <td>${user.email}</td>
+                            <td>${user.is_admin ? '✅ Sí' : '❌ No'}</td>
+                            <td>${user.post_count}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('users-table').innerHTML = html;
+                }
+            });
+    </script>
+</body>
+</html>
