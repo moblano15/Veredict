@@ -1,0 +1,95 @@
+/* LOGO MÁS PEQUEÑO */
+.logo-img {
+    width: 180px !important;  /* Reducido de 350px */
+    height: auto !important;  /* Proporción automática */
+    object-fit: contain;
+}
+
+/* Menú hamburguesa - MEJORADO */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transition: all 0.3s;
+    z-index: 101;
+}
+
+.menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 4px 0;
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+/* Animación para el menú hamburguesa */
+.menu-toggle.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+/* Responsive - Móvil */
+@media (max-width: 768px) {
+    .logo-img {
+        width: 140px !important;  /* Más pequeño en móvil */
+    }
+    
+    .menu-toggle {
+        display: flex;
+        order: 2;
+    }
+    
+    nav {
+        position: fixed;
+        top: 110px;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(135deg, #4a5568, #2d3748);
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 99;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 20px;
+        visibility: hidden;
+    }
+    
+    nav.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        margin-top: 0;
+    }
+    
+    nav ul li {
+        margin: 0;
+        margin-bottom: 10px;
+    }
+    
+    nav ul li a {
+        display: block;
+        padding: 12px 15px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-img {
+        width: 120px !important;  /* Aún más pequeño */
+    }
+}
