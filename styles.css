@@ -1,0 +1,326 @@
+/* Importa este CSS completo en tu proyecto */
+
+/* ESTILOS GENERALES */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f5f7fa;
+  font-size: 14px; /* Texto más pequeño */
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* HEADER CON LOGO PEQUEÑO */
+header {
+  background: linear-gradient(135deg, #747474 100%);
+  color: white;
+  padding: 12px 0; /* Reducido de 15px */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* LOGO MÁS PEQUEÑO (180px en desktop) */
+.logo-img {
+  width: 180px !important; /* Reducido de 350px */
+  height: auto !important; /* Mantiene proporción */
+  object-fit: contain;
+}
+
+/* MENÚ HAMBURGUESA FUNCIONAL */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.menu-toggle span {
+  width: 25px;
+  height: 3px;
+  background: white;
+  margin: 4px 0;
+  transition: 0.3s;
+  border-radius: 2px;
+}
+
+/* Animación del menú hamburguesa */
+.menu-toggle.active span:nth-child(1) {
+  transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: rotate(45deg) translate(-5px, -6px);
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+}
+
+nav ul li {
+  margin-left: 15px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: all 0.3s;
+  font-weight: 500;
+  font-size: 13px; /* Texto más pequeño */
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+  background-color: #f4630c;
+  transform: translateY(-2px);
+}
+
+/* RESPONSIVE - MÓVIL */
+@media (max-width: 768px) {
+  .logo-img {
+    width: 140px !important; /* Más pequeño en móvil */
+  }
+  
+  .menu-toggle {
+    display: flex;
+    order: 2;
+  }
+  
+  nav {
+    position: fixed;
+    top: 110px;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(135deg, #4a5568, #2d3748);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 99;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  
+  nav.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  nav ul {
+    flex-direction: column;
+    margin-top: 0;
+  }
+  
+  nav ul li {
+    margin: 0;
+    margin-bottom: 10px;
+  }
+  
+  nav ul li a {
+    display: block;
+    padding: 10px 15px;
+    text-align: center;
+    font-size: 12px; /* Texto más pequeño en móvil */
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-img {
+    width: 120px !important; /* Aún más pequeño */
+  }
+  
+  .menu-toggle {
+    padding: 6px;
+  }
+  
+  .menu-toggle span {
+    width: 22px;
+    height: 2.5px;
+  }
+}
+
+/* CONTENIDO PRINCIPAL */
+main {
+  padding: 20px 0; /* Reducido de 30px */
+  min-height: calc(100vh - 150px);
+}
+
+.section {
+  display: none;
+  animation: fadeIn 0.3s;
+}
+
+.section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* TARJETAS DE PUBLICACIONES */
+.post-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px; /* Reducido de 25px */
+  padding: 18px; /* Reducido de 20px */
+  transition: all 0.3s;
+  font-size: 13px; /* Texto más pequeño */
+}
+
+.post-card:hover {
+  transform: translateY(-3px); /* Reducido de 5px */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12); /* Reducido */
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px; /* Reducido de 15px */
+}
+
+.post-avatar {
+  width: 40px; /* Reducido de 45px */
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px; /* Reducido de 12px */
+  border: 2px solid #e2e8f0;
+}
+
+.post-user {
+  font-weight: bold;
+  font-size: 14px; /* Reducido de 16px */
+}
+
+.post-time {
+  color: #718096;
+  font-size: 12px; /* Reducido de 14px */
+}
+
+.component-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, #f4630c, #ff8c00);
+  color: white;
+  padding: 4px 10px; /* Reducido de 5px 12px */
+  border-radius: 20px;
+  font-size: 11px; /* Reducido de 13px */
+  margin-right: 5px;
+  margin-bottom: 6px; /* Reducido de 8px */
+  font-weight: 600;
+}
+
+.rating {
+  color: #fbbf24;
+  margin: 8px 0; /* Reducido de 10px */
+  font-size: 16px; /* Reducido de 18px */
+}
+
+/* FORMULARIOS MÁS COMPACTOS */
+.form-container {
+  background-color: white;
+  border-radius: 10px; /* Reducido de 12px */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Reducido */
+  padding: 25px; /* Reducido de 30px */
+  max-width: 650px; /* Reducido de 700px */
+  margin: 0 auto;
+  font-size: 13px; /* Texto más pequeño */
+}
+
+.form-group {
+  margin-bottom: 16px; /* Reducido de 20px */
+}
+
+.form-group label {
+  font-size: 13px; /* Reducido */
+}
+
+.form-control {
+  padding: 10px 14px; /* Reducido de 12px 16px */
+  font-size: 14px; /* Reducido de 16px */
+}
+
+/* BOTONES MÁS PEQUEÑOS */
+.btn {
+  padding: 10px 20px; /* Reducido de 12px 24px */
+  font-size: 14px; /* Reducido de 16px */
+}
+
+/* CHATBOX MÁS COMPACTO */
+.chatbox {
+  width: 320px; /* Reducido de 350px */
+  height: 450px; /* Reducido de 500px */
+}
+
+.chatbox-header {
+  padding: 15px; /* Reducido de 18px */
+}
+
+.chatbox-title {
+  font-size: 14px; /* Reducido de 16px */
+}
+
+.message {
+  padding: 10px 14px; /* Reducido de 12px 16px */
+  font-size: 13px; /* Texto más pequeño */
+}
+
+/* FOOTER MÁS PEQUEÑO */
+footer {
+  padding: 20px 0; /* Reducido de 25px */
+  font-size: 13px; /* Texto más pequeño */
+}
+
+/* MODAL DE AUTH MÁS COMPACTO */
+.modal-content {
+  padding: 30px; /* Reducido de 40px */
+  max-width: 400px; /* Reducido de 450px */
+}
+
+/* TEXTO GENERAL MÁS PEQUEÑO */
+h1 { font-size: 22px; } /* Reducido de 24px */
+h2 { font-size: 18px; } /* Reducido de 20px */
+h3 { font-size: 16px; } /* Reducido de 18px */
+p { font-size: 13px; } /* Reducido de 14px */
+
+/* Añade esto al final del archivo para mantener la compatibilidad */
+.section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #2d3748;
+}

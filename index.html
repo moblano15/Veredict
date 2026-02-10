@@ -1,0 +1,2689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://accounts.google.com/gsi/client" async defer></script> <!-- Google Identity Services -->
+    <title>Veredict - Reviews de Hardware</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <!-- Modal de autenticación Veredict -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="./images/logo2.png" alt="Veredict" class="modal-logo-img">
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Iniciar Sesión</div>
+                <div class="auth-tab" data-tab="register">Registrarse</div>
+            </div>
+            
+            <!-- Mensajes de error/éxito -->
+            <div id="auth-error-message" class="message-box error">
+                <i class="fas fa-exclamation-circle"></i> Credenciales incorrectas. Inténtalo de nuevo.
+            </div>
+            
+            <div id="auth-success-message" class="message-box success">
+                <i class="fas fa-check-circle"></i> ¡Inicio de sesión exitoso! Redirigiendo...
+            </div>
+            
+            <!-- Formulario de inicio de sesión -->
+            <form id="login-form" class="auth-form veredict-form active">
+                <div class="form-group">
+                    <label for="login-email">E-mail *</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="ejemplo@correo.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Contraseña *</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="Ingresa tu contraseña" required>
+                </div>
+                
+                <div class="password-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember"> Recordarme
+                    </label>
+                    <a href="#" class="forgot-password" id="forgot-password">
+                        <i class="fas fa-key"></i> He olvidado mi contraseña
+                    </a>
+                </div>
+                
+                <button type="submit" class="veredict-btn">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                
+                <div class="divider">
+                    <span class="divider-text">O continúa con</span>
+                </div>
+                
+                <button type="button" class="veredict-btn btn-google" id="google-login">
+                    <div class="google-icon"></div>
+                    Iniciar sesión con Google
+                </button>
+            </form>
+            
+            <!-- Formulario de registro -->
+            <form id="register-form" class="auth-form veredict-form">
+                <div class="form-group">
+                    <label for="register-name">Nombre completo *</label>
+                    <input type="text" id="register-name" class="form-control" placeholder="Tu nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">Correo electrónico *</label>
+                    <input type="email" id="register-email" class="form-control" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Contraseña *</label>
+                    <input type="password" id="register-password" class="form-control" placeholder="Mínimo 6 caracteres" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirmar Contraseña *</label>
+                    <input type="password" id="register-confirm-password" class="form-control" placeholder="Repite tu contraseña" required>
+                </div>
+                
+                <button type="submit" class="veredict-btn">Registrarse</button>
+                
+                <div class="register-link">
+                    <p>¿Ya tienes una cuenta?</p>
+                    <a href="#" class="register-btn" id="go-to-login">
+                        <i class="fas fa-sign-in-alt"></i> Inicia sesión aquí
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de compartir -->
+    <div id="share-modal" class="share-modal">
+        <div class="share-modal-content">
+            <div class="share-modal-header">
+                <div class="share-modal-title">Compartir publicación</div>
+                <button class="close-share-modal">&times;</button>
+            </div>
+            <div class="share-options">
+                <div class="share-option" data-share-type="facebook">
+                    <i>📘</i>
+                    <span>Facebook</span>
+                </div>
+                <div class="share-option" data-share-type="twitter">
+                    <i>🐦</i>
+                    <span>Twitter</span>
+                </div>
+                <div class="share-option" data-share-type="linkedin">
+                    <i>💼</i>
+                    <span>LinkedIn</span>
+                </div>
+                <div class="share-option" data-share-type="whatsapp">
+                    <i>📱</i>
+                    <span>WhatsApp</span>
+                </div>
+                <div class="share-option" data-share-type="email">
+                    <i>✉️</i>
+                    <span>Email</span>
+                </div>
+            </div>
+            <div class="share-link-container">
+                <input type="text" class="share-link" id="share-link" readonly>
+                <button class="copy-link-btn" id="copy-link-btn">Copiar</button>
+            </div>
+            <div class="copy-success" id="copy-success">¡Enlace copiado al portapapeles!</div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de compra -->
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content confirmation-modal">
+            <div class="confirmation-icon">✓</div>
+            <h2>¡Compra realizada con éxito!</h2>
+            <p>Tu pedido ha sido procesado correctamente.</p>
+            
+            <div class="order-details">
+                <h3>Detalles del pedido</h3>
+                <div id="order-details-content">
+                    <!-- Los detalles del pedido se cargarán aquí -->
+                </div>
+            </div>
+            
+            <p>Recibirás un correo de confirmación con los detalles de tu compra.</p>
+            <p>Número de seguimiento: <strong>VRD-<span id="tracking-number">000000</span></strong></p>
+            
+            <div style="margin-top: 30px;">
+                <button class="veredict-btn" id="close-confirmation-modal">Continuar comprando</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header y navegación CON ENCABEZADO GRIS CORREGIDO Y SIN AVATAR -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="./images/logo2.png" alt="Veredict" class="logo-img">
+                </div>
+                
+                <!-- Menú hamburguesa -->
+                <div class="menu-toggle" id="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <nav id="main-nav">
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-section="inicio">Inicio</a></li>
+                        <li><a href="#" class="nav-link" data-section="busqueda">Búsqueda</a></li>
+                        <li><a href="#" class="nav-link" data-section="crear">Crear</a></li>
+                        <li><a href="#" class="nav-link" data-section="tienda">Tienda</a></li>
+                        <li><a href="#" class="nav-link" data-section="carrito">
+                            <span class="cart-icon">🛒<span class="cart-count" id="cart-count">0</span></span>
+                            Carrito
+                        </a></li>
+                        <li><a href="#" class="nav-link" data-section="perfil">Perfil</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i id="theme-icon">☀️</i>
+                        <span id="theme-text">Modo Claro</span>
+                    </button>
+                    <a href="#" id="auth-link">Iniciar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <div class="container">
+            <!-- Sección Inicio -->
+            <section id="inicio" class="section active">
+                <h2>Opiniones Recientes</h2>
+                
+                <!-- Mensaje informativo -->
+                <div class="info-message">
+                    <p><strong>Resumen de componentes más populares</strong> - En esta sección encontrarás las opiniones más recientes sobre CPU, GPU y RAM. Para ver todos los componentes disponibles, visita la sección de <a href="#" class="nav-link" data-section="busqueda" style="color: #f4630c; text-decoration: underline;">Búsqueda</a>.</p>
+                </div>
+                
+                <div id="posts-container">
+                    <!-- Las publicaciones se cargarán aquí dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección Búsqueda -->
+            <section id="busqueda" class="section">
+                <h2>Buscar Componentes</h2>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Buscar componentes, marcas, modelos...">
+                    <button class="search-btn" id="search-btn">Buscar</button>
+                </div>
+                
+                <!-- Botones de categorías para búsqueda -->
+                <div class="category-buttons">
+                    <button class="category-btn active" data-category="all">Todos</button>
+                    <button class="category-btn" data-category="cpu">CPU</button>
+                    <button class="category-btn" data-category="gpu">GPU</button>
+                    <button class="category-btn" data-category="ram">RAM</button>
+                    <button class="category-btn" data-category="refrigeracion">Refrigeración Líquida</button>
+                    <button class="category-btn" data-category="alimentacion">Fuente de Alimentación</button>
+                    <button class="category-btn" data-category="motherboard">Placa Base</button>
+                    <button class="category-btn" data-category="storage">Almacenamiento</button>
+                </div>
+                
+                <h3>Resultados de búsqueda</h3>
+                <div id="search-results">
+                    <!-- Los resultados se cargarán aquí dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección Crear -->
+            <section id="crear" class="section">
+                <h2>Crear Nueva Opinión</h2>
+                <div class="form-container">
+                    <form id="nueva-opinion">
+                        <div class="form-group">
+                            <label for="componente">Componentes</label>
+                            <input type="text" id="componente" class="form-control" placeholder="Ej: NVIDIA RTX 4070" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria">Categoría</label>
+                            <select id="categoria" class="form-control" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="cpu">CPU/Procesador</option>
+                                <option value="gpu">GPU/Tarjeta Gráfica</option>
+                                <option value="ram">RAM/Memoria</option>
+                                <option value="motherboard">Placa Base</option>
+                                <option value="storage">Almacenamiento</option>
+                                <option value="cooling">Refrigeración</option>
+                                <option value="psu">Fuente de Alimentación</option>
+                                <option value="case">Caja/Gabinete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="valoracion">Valoración</label>
+                            <select id="valoracion" class="form-control" required>
+                                <option value="">Selecciona una valoración</option>
+                                <option value="5">★★★★★ - Excelente</option>
+                                <option value="4">★★★★☆ - Muy Bueno</option>
+                                <option value="3">★★★☆☆ - Bueno</option>
+                                <option value="2">★★☆☆☆ - Regular</option>
+                                <option value="1">★☆☆☆☆ - Malo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="titulo">Título de la opinión</label>
+                            <input type="text" id="titulo" class="form-control" placeholder="Un título descriptivo para tu opinión" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contenido">Tu opinión</label>
+                            <textarea id="contenido" class="form-control" placeholder="Describe tu experiencia con el componente, puntos fuertes, débiles, etc." required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Publicar Opinión</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Sección Tienda -->
+            <section id="tienda" class="section">
+                <h2>Tienda de Componentes</h2>
+                <div class="category-buttons">
+                    <button class="category-btn active" data-category="all">Todos</button>
+                    <button class="category-btn" data-category="cpu">CPU</button>
+                    <button class="category-btn" data-category="gpu">GPU</button>
+                    <button class="category-btn" data-category="ram">RAM</button>
+                    <button class="category-btn" data-category="refrigeracion">Refrigeración</button>
+                    <button class="category-btn" data-category="alimentacion">Fuentes</button>
+                    <button class="category-btn" data-category="motherboard">Placas Base</button>
+                    <button class="category-btn" data-category="storage">Almacenamiento</button>
+                </div>
+                <div class="search-container" style="margin-top: 20px;">
+                    <input type="text" class="search-input" id="tienda-search-input" placeholder="Buscar productos...">
+                    <button class="search-btn" id="tienda-search-btn">Buscar</button>
+                </div>
+                <div id="tienda-productos" class="productos-container">
+                    <!-- Los productos se cargarán aquí dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección Carrito -->
+            <section id="carrito" class="section">
+                <h2>Tu Carrito de Compras</h2>
+                
+                <div id="cart-empty-message" class="info-message" style="display: none;">
+                    <p>Tu carrito está vacío. Visita la <a href="#" class="nav-link" data-section="tienda" style="color: #f4630c; text-decoration: underline;">tienda</a> para agregar productos.</p>
+                </div>
+                
+                <div id="cart-content" class="cart-container" style="display: none;">
+                    <div class="cart-items" id="cart-items-container">
+                        <!-- Los productos del carrito se cargarán aquí -->
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <h3>Resumen del Pedido</h3>
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="cart-subtotal">$0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Envío:</span>
+                            <span id="cart-shipping">$9.99</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Impuestos (10%):</span>
+                            <span id="cart-tax">$0.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="cart-total">$0.00</span>
+                        </div>
+                        
+                        <div class="cart-actions">
+                            <button class="btn btn-secondary" id="continue-shopping-btn">Seguir Comprando</button>
+                            <button class="btn" id="checkout-btn">Proceder al Pago</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Pago -->
+            <section id="pago" class="section">
+                <h2>Finalizar Compra</h2>
+                
+                <div id="checkout-content" class="cart-container">
+                    <div class="cart-summary">
+                        <h3>Resumen del Pedido</h3>
+                        <div id="checkout-summary">
+                            <!-- Resumen del pedido para pago -->
+                        </div>
+                        
+                        <div class="order-summary">
+                            <div class="summary-row total">
+                                <span>Total a pagar:</span>
+                                <span id="checkout-total">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-details">
+                        <h3>Método de Pago</h3>
+                        <div class="payment-methods">
+                            <div class="payment-method selected" data-payment="credit">
+                                <div class="payment-icon">💳</div>
+                                <div>
+                                    <div><strong>Tarjeta de Crédito/Débito</strong></div>
+                                    <div style="font-size: 12px;">Pago seguro con cifrado SSL</div>
+                                </div>
+                            </div>
+                            <div class="payment-method" data-payment="paypal">
+                                <div class="payment-icon">📱</div>
+                                <div>
+                                    <div><strong>PayPal</strong></div>
+                                    <div style="font-size: 12px;">Paga con tu cuenta PayPal</div>
+                                </div>
+                            </div>
+                            <div class="payment-method" data-payment="transfer">
+                                <div class="payment-icon">🏦</div>
+                                <div>
+                                    <div><strong>Transferencia Bancaria</strong></div>
+                                    <div style="font-size: 12px;">Transferencia directa</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="credit-card-form">
+                            <div class="form-group">
+                                <label for="card-number">Número de tarjeta</label>
+                                <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div style="display: flex; gap: 15px;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="card-expiry">Fecha de expiración</label>
+                                    <input type="text" id="card-expiry" class="form-control" placeholder="MM/AA" maxlength="5">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="card-cvv">CVV</label>
+                                    <input type="text" id="card-cvv" class="form-control" placeholder="123" maxlength="3">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="card-name">Nombre en la tarjeta</label>
+                                <input type="text" id="card-name" class="form-control" placeholder="Como aparece en la tarjeta">
+                            </div>
+                        </div>
+                        
+                        <div id="paypal-info" style="display: none;">
+                            <div class="info-message">
+                                <p>Serás redirigido a PayPal para completar tu pago de forma segura.</p>
+                            </div>
+                        </div>
+                        
+                        <div id="transfer-info" style="display: none;">
+                            <div class="info-message">
+                                <p>Datos para transferencia bancaria:</p>
+                                <p><strong>Banco:</strong> Banco Veredict<br>
+                                <strong>IBAN:</strong> ES12 3456 7890 1234 5678 9012<br>
+                                <strong>Beneficiario:</strong> Veredict S.L.<br>
+                                <strong>Concepto:</strong> Compra VRD-<span id="transfer-reference">000000</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label for="shipping-address">Dirección de envío</label>
+                            <textarea id="shipping-address" class="form-control" placeholder="Calle, número, ciudad, código postal" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="shipping-notes">Notas de envío (opcional)</label>
+                            <textarea id="shipping-notes" class="form-control" placeholder="Instrucciones especiales para la entrega" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="remember-me">
+                                <input type="checkbox" id="terms-checkbox"> Acepto los <a href="#" style="color: #f4630c;">términos y condiciones</a>
+                            </label>
+                        </div>
+                        
+                        <div class="cart-actions">
+                            <button class="btn btn-secondary" id="back-to-cart-btn">Volver al Carrito</button>
+                            <button class="btn" id="confirm-purchase-btn">Confirmar Compra</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Perfil -->
+            <section id="perfil" class="section">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <h1 id="profile-name">Inicia sesión para ver tu perfil</h1>
+                        <p class="profile-bio" id="profile-bio"></p>
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="stat-posts">0</div>
+                                <div class="stat-label">Opiniones</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="stat-likes">0</div>
+                                <div class="stat-label">Me gusta</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="stat-followers">0</div>
+                                <div class="stat-label">Seguidores</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2 id="profile-posts-title">Tus Opiniones</h2>
+                <div id="user-posts">
+                    <p>Inicia sesión para ver y crear tus opiniones.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Veredict - Tu red social de reviews sobre componentes de ordenador &copy; 2025</p>
+        </div>
+    </footer>
+
+        <script>
+        // Estado de la aplicación
+        const appState = {
+            currentUser: null,
+            cart: [],
+            posts: [
+                // CPU (3 ejemplos)
+                {
+                    id: 1,
+                    userId: 1,
+                    userName: "Carlos Rodríguez",
+                    userAvatar: "https://i.pravatar.cc/40?img=1",
+                    component: "AMD Ryzen 7 7800X3D",
+                    category: "cpu",
+                    rating: 5,
+                    title: "AMD Ryzen 7 7800X3D - Bestia para gaming",
+                    content: "Increíble procesador para gaming. La tecnología 3D V-Cache hace maravillas en juegos que dependen mucho de la caché. Temperaturas controladas con buen refrigerador. Consumo eficiente para el rendimiento que ofrece.",
+                    likes: 45,
+                    userLiked: false,
+                    comments: [
+                        {
+                            id: 1,
+                            userId: 2,
+                            userName: "Ana Martínez",
+                            userAvatar: "https://i.pravatar.cc/40?img=2",
+                            content: "¡Totalmente de acuerdo! Lo tengo desde hace 2 meses y es increíble para gaming.",
+                            time: "Hace 1 hora"
+                        },
+                        {
+                            id: 2,
+                            userId: 3,
+                            userName: "Miguel Torres",
+                            userAvatar: "https://i.pravatar.cc/40?img=3",
+                            content: "¿Qué refrigerador estás usando? Estoy pensando en comprarlo.",
+                            time: "Hace 30 minutos"
+                        }
+                    ],
+                    time: "Hace 2 horas"
+                },
+                {
+                    id: 2,
+                    userId: 2,
+                    userName: "Ana Martínez",
+                    userAvatar: "https://i.pravatar.cc/40?img=2",
+                    component: "Intel Core i9-14900K",
+                    category: "cpu",
+                    rating: 4,
+                    title: "Intel Core i9-14900K - Potencia extrema",
+                    content: "Rendimiento brutal en aplicaciones de productividad y gaming. Necesita refrigeración líquida de alta gama para mantener temperaturas bajo control. Consumo elevado pero justificado por el rendimiento.",
+                    likes: 32,
+                    userLiked: false,
+                    comments: [
+                        {
+                            id: 1,
+                            userId: 1,
+                            userName: "Carlos Rodríguez",
+                            userAvatar: "https://i.pravatar.cc/40?img=1",
+                            content: "Para productividad es insuperable. Lo uso para renderizado 3D.",
+                            time: "Hace 2 horas"
+                        }
+                    ],
+                    time: "Hace 1 día"
+                },
+                {
+                    id: 3,
+                    userId: 3,
+                    userName: "Miguel Torres",
+                    userAvatar: "https://i.pravatar.cc/40?img=3",
+                    component: "AMD Ryzen 5 7600X",
+                    category: "cpu",
+                    rating: 5,
+                    title: "AMD Ryzen 5 7600X - Excelente relación calidad-precio",
+                    content: "Perfecto para gaming en 1080p y 1440p. Bajo consumo y temperaturas manejables. Ideal para builds de presupuesto medio sin sacrificar rendimiento.",
+                    likes: 28,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 3 días"
+                },
+
+
+                {
+                    id: 4,
+                    userId: 4,
+                    userName: "Laura Sánchez",
+                    userAvatar: "https://i.pravatar.cc/40?img=4",
+                    component: "NVIDIA RTX 4090",
+                    category: "gpu",
+                    rating: 5,
+                    title: "NVIDIA RTX 4090 - Monstruo de rendimiento",
+                    content: "La mejor tarjeta gráfica del mercado. Maneja cualquier juego en 4K con tasas de refresco altísimas. DLSS 3 es revolucionario. Consumo elevado pero esperable para este nivel de rendimiento.",
+                    likes: 67,
+                    userLiked: false,
+                    comments: [
+                        {
+                            id: 1,
+                            userId: 2,
+                            userName: "Ana Martínez",
+                            userAvatar: "https://i.pravatar.cc/40?img=2",
+                            content: "¡Envidia sana! ¿Qué fuente de alimentación usas?",
+                            time: "Hace 3 horas"
+                        }
+                    ],
+                    time: "Hace 4 horas"
+                },
+                {
+                    id: 5,
+                    userId: 5,
+                    userName: "David López",
+                    userAvatar: "https://i.pravatar.cc/40?img=5",
+                    component: "AMD Radeon RX 7900 XTX",
+                    category: "gpu",
+                    rating: 4,
+                    title: "AMD Radeon RX 7900 XTX - Competencia seria",
+                    content: "Excelente alternativa a las RTX 4000. Buen rendimiento en rasterizado, Ray Tracing mejorado. Drivers estables y buen soporte de software.",
+                    likes: 41,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+                {
+                    id: 6,
+                    userId: 6,
+                    userName: "Sofía García",
+                    userAvatar: "https://i.pravatar.cc/40?img=6",
+                    component: "NVIDIA RTX 4070 Ti",
+                    category: "gpu",
+                    rating: 5,
+                    title: "NVIDIA RTX 4070 Ti - Perfecta para 1440p",
+                    content: "Rendimiento excelente en 1440p, DLSS 3 funciona de maravilla. Consumo eficiente y temperaturas controladas. Relación calidad-precio muy buena.",
+                    likes: 53,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 2 días"
+                },
+                {
+                    id: 7,
+                    userId: 7,
+                    userName: "Javier Ruiz",
+                    userAvatar: "https://i.pravatar.cc/40?img=7",
+                    component: "AMD Radeon RX 7800 XT",
+                    category: "gpu",
+                    rating: 4,
+                    title: "AMD Radeon RX 7800 XT - Mejor opción mid-range",
+                    content: "Excelente rendimiento por el precio. Compite directamente con RTX 4070. Buen software Adrenalin y características completas.",
+                    likes: 38,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 3 días"
+                },
+
+                // RAM (5 ejemplos)
+                {
+                    id: 8,
+                    userId: 8,
+                    userName: "Elena Morales",
+                    userAvatar: "https://i.pravatar.cc/40?img=8",
+                    component: "Corsair Vengeance RGB 32GB 6000MHz CL30",
+                    category: "ram",
+                    rating: 5,
+                    title: "Corsair Vengeance RGB 32GB 6000MHz CL30",
+                    content: "Excelentes velocidades, estabilidad perfecta. RGB espectacular y software iCUE muy completo. Perfecta para Ryzen 7000.",
+                    likes: 29,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 5 horas"
+                },
+                {
+                    id: 9,
+                    userId: 9,
+                    userName: "Roberto Jiménez",
+                    userAvatar: "https://i.pravatar.cc/40?img=9",
+                    component: "G.Skill Trident Z5 RGB 64GB 6400MHz CL32",
+                    category: "ram",
+                    rating: 5,
+                    title: "G.Skill Trident Z5 RGB 64GB 6400MHz CL32",
+                    content: "Potencia bruta para estaciones de trabajo. Estabilidad excelente incluso a altas velocidades. Diseño premium y buena disipación.",
+                    likes: 24,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+                {
+                    id: 10,
+                    userId: 10,
+                    userName: "Carmen Díaz",
+                    userAvatar: "https://i.pravatar.cc/40?img=10",
+                    component: "Kingston Fury Beast 32GB 5600MHz CL36",
+                    category: "ram",
+                    rating: 4,
+                    title: "Kingston Fury Beast 32GB 5600MHz CL36",
+                    content: "Buena relación calidad-precio. Funciona perfectamente con Intel y AMD. Diseño discreto y buen rendimiento.",
+                    likes: 31,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 2 días"
+                },
+
+                // Refrigeración Líquida (5 ejemplos)
+                {
+                    id: 11,
+                    userId: 11,
+                    userName: "Pedro Martínez",
+                    userAvatar: "https://i.pravatar.cc/40?img=11",
+                    component: "Corsair iCUE H150i Elite CAPELLIX XT",
+                    category: "refrigeracion",
+                    rating: 5,
+                    title: "Corsair iCUE H150i Elite CAPELLIX XT - Excelente refrigeración",
+                    content: "Mantiene mi i9-14900K bajo 70°C en carga. RGB espectacular y software iCUE muy completo. Instalación sencilla.",
+                    likes: 42,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 6 horas"
+                },
+                {
+                    id: 12,
+                    userId: 12,
+                    userName: "Lucía Hernández",
+                    userAvatar: "https://i.pravatar.cc/40?img=12",
+                    component: "NZXT Kraken Z73 RGB",
+                    category: "refrigeracion",
+                    rating: 5,
+                    title: "NZXT Kraken Z73 RGB - Pantalla LCD increíble",
+                    content: "La pantalla LCD es un detalle espectacular. Rendimiento térmico excelente y muy silencioso. Software CAM fácil de usar.",
+                    likes: 38,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+
+                // Fuente de Alimentación (5 ejemplos)
+                {
+                    id: 13,
+                    userId: 13,
+                    userName: "Diego Navarro",
+                    userAvatar: "https://i.pravatar.cc/40?img=13",
+                    component: "Corsair RM1000x Shift",
+                    category: "alimentacion",
+                    rating: 5,
+                    title: "Corsair RM1000x Shift - Conexiones laterales geniales",
+                    content: "Las conexiones laterales facilitan mucho el cable management. Eficiencia 80 Plus Gold, completamente modular y silenciosa.",
+                    likes: 31,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 5 horas"
+                },
+                {
+                    id: 14,
+                    userId: 14,
+                    userName: "Patricia López",
+                    userAvatar: "https://i.pravatar.cc/40?img=14",
+                    component: "Seasonic Prime TX-1000",
+                    category: "alimentacion",
+                    rating: 5,
+                    title: "Seasonic Prime TX-1000 - Calidad suprema",
+                    content: "Eficiencia 80 Plus Titanium, la mejor del mercado. Construcción impecable y garantía de 12 años. Totalmente silenciosa.",
+                    likes: 26,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+
+                // Placas Base (5 ejemplos)
+                {
+                    id: 15,
+                    userId: 15,
+                    userName: "Cristina Ortega",
+                    userAvatar: "https://i.pravatar.cc/40?img=15",
+                    component: "ASUS ROG Strix X670E-E Gaming WiFi",
+                    category: "motherboard",
+                    rating: 5,
+                    title: "ASUS ROG Strix X670E-E - Para los más exigentes",
+                    content: "Características completas, excelente VRM y buen audio. BIOS muy completo y personalización RGB espectacular.",
+                    likes: 41,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 6 horas"
+                },
+                {
+                    id: 16,
+                    userId: 16,
+                    userName: "Gabriel Santos",
+                    userAvatar: "https://i.pravatar.cc/40?img=16",
+                    component: "MSI MPG B650 Carbon WiFi",
+                    category: "motherboard",
+                    rating: 4,
+                    title: "MSI MPG B650 Carbon - Mejor relación calidad-precio",
+                    content: "Excelente placa para Ryzen 7000. Buen VRM, WiFi 6E y características completas. BIOS fácil de usar.",
+                    likes: 37,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                },
+
+                // Almacenamiento (5 ejemplos)
+                {
+                    id: 17,
+                    userId: 17,
+                    userName: "Ricardo Mora",
+                    userAvatar: "https://i.pravatar.cc/40?img=17",
+                    component: "Samsung 990 Pro 2TB NVMe SSD",
+                    category: "storage",
+                    rating: 5,
+                    title: "Samsung 990 Pro 2TB - El más rápido",
+                    content: "Velocidades increíbles, perfecto para sistema y juegos. Temperaturas controladas y gran durabilidad.",
+                    likes: 48,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 7 horas"
+                },
+                {
+                    id: 18,
+                    userId: 18,
+                    userName: "Beatriz Navarro",
+                    userAvatar: "https://i.pravatar.cc/40?img=18",
+                    component: "WD Black SN850X 4TB",
+                    category: "storage",
+                    rating: 5,
+                    title: "WD Black SN850X 4TB - Capacidad y velocidad",
+                    content: "Enorme capacidad con velocidades de elite. Perfecto para almacenar muchos juegos y proyectos.",
+                    likes: 36,
+                    userLiked: false,
+                    comments: [],
+                    time: "Hace 1 día"
+                }
+            ],
+            productos: [
+                {
+                    id: 1,
+                    nombre: "AMD Ryzen 7 7800X3D",
+                    categoria: "cpu",
+                    precio: 338.25,
+                    descripcion: "Procesador para gaming con tecnología 3D V-Cache, 8 núcleos, 16 hilos",
+                    imagen: "https://www.coolmod.com/images/product/large/PROD-032811_1.jpg",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "https://www.amazon.com/-/es/AMD-Ryzen-7800X3D-procesador-escritorio/dp/B0BTZB7F88/ref=sr_1_1?crid=E9ZSE0TJGH72&dib=eyJ2IjoiMSJ9.2Y6U30Ota4udzXAMcBoddbvOJdnr-cqlWL8hkA0dH2eJP8gF2CRRU8szmoGB79ZK-HsNbpSLAVrVXIvnfz7hc_0oCp2AUIV7UygNJ_rFvDwusiFa9ZQQEdufxAA-GNvyOVKDh_xUWYMLpCp15EWnmAjUfS-8pllRxiNcmBEE6daL5z5a2P8DJ3qQnicCL2jTwxJ1PojqnLxyYqXgQzxJlnC2bToLtaYEJqRla06mXk4.MeEC0WNyTtNlS9Y44IfF-c-ULAklYrbOV-Q4FtopROY&dib_tag=se&keywords=amd%2Bryzen%2B7%2B7800x3d&qid=1770192602&sprefix=AMD%2BRyzen%2B7%2B7800X3D%2Caps%2C279&sr=8-1&th=1"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/amd-ryzen-7-7800x3d-ryzen-7-7000-series-raphael-zen-4-socket-am5/p/N82E16819113793?srsltid=AfmBOoqcNjW0W6-RjkOXvGpASnEYHJu7XSHMc9aZoVZBt0hqDgXWzj6k"},
+                    ],
+                    valoraciones: [
+                        {usuario: "Carlos R.", rating: 5, comentario: "Excelente para gaming, el 3D V-Cache hace magia.", fecha: "2024-03-15"},
+                        {usuario: "Ana M.", rating: 4, comentario: "Muy buen rendimiento, pero necesita buen refrigerador.", fecha: "2024-03-10"}
+                    ]
+                },
+                {
+                    id: 2,
+                    nombre: "Intel Core i9-14900K",
+                    categoria: "cpu",
+                    precio: 460.90,
+                    descripcion: "Procesador de alto rendimiento para gaming y productividad, 24 núcleos",
+                    imagen: "data:image/jpeg;base64,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",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "https://www.amazon.es/Intel-BX8071514900K-Core-i9-14900K-Tray-Version/dp/B0CHBJGFBC/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1K8K1M29HQVS&dib=eyJ2IjoiMSJ9.BYciJEW51u9vhyxR4cuYPTz70jTY4mQncVDVKqbJod2I0rjuts6KqtRh7HG2Y7v77PQkrA4mDXTtcMwyheLTiAOGyed-PJ_L5xUJX9YYQpPCfDzow6JpUSjmO-95XrPARKM1lz6t-NdOYs0sPsrzYwR89lBc3LcYpyX6sjPNMiAhGwtrG0n-3Grx5GiL0V4CwRfQD18J1PdtEWpZtdfK0vdhLekjSTCiDl9envkHuZO_etNRhbcz2L0tgJII7vQPBwDAdJZxwVhSEgEIuZyOty1LsYZezyLInQUN0f2YM2w.ZAxzBRPiNLlTksvOE30mC0N35-HFdvYkJmJa53Pjk6w&dib_tag=se&keywords=Intel%2BCore%2Bi9-14900K&qid=1770192931&sprefix=intel%2Bcore%2Bi9-14900k%2Caps%2C357&sr=8-1&th=1"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/intel-core-i9-14th-gen-core-i9-14900k-raptor-lake-lga-1700-desktop-cpu-processor/p/N82E16819118462"},
+                    ],
+                    valoraciones: [
+                        {usuario: "Miguel T.", rating: 5, comentario: "Brutal para productividad, renderiza todo al instante.", fecha: "2024-03-12"},
+                        {usuario: "Laura S.", rating: 4, comentario: "Potente pero consume mucho. Necesita refrigeración líquida.", fecha: "2024-03-05"}
+                    ]
+                },
+                {
+                    id: 3,
+                    nombre: "GIGABYTE GeForce NVIDIA RTX 4090 24GB GDDR6X",
+                    categoria: "gpu",
+                    precio: 2399.00,
+                    descripcion: "Tarjeta gráfica más potente del mercado para gaming 4K y Ray Tracing",
+                    imagen: "https://thumb.pccomponentes.com/w-530-530/articles/1058/10589923/1624-gigabyte-geforce-rtx-4090-gaming-oc-24gb-gddr6x.jpg",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "amazon.es/GIGABYTE-GeForce-Anti-sag-GV-N4090GAMING-OC-24GD/dp/B0BH8MK76C"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/p/1FT-000A-00694?srsltid=AfmBOooIJK6AKzDH8d5wj3bO5Cwr0C3hunqLp36iJdNc3DubGu9xwLEp"},
+                    ],
+                    valoraciones: [
+                        {usuario: "David L.", rating: 5, comentario: "Increíble para 4K gaming, todo a máximo fluye perfecto.", fecha: "2024-03-18"},
+                        {usuario: "Sofía G.", rating: 5, comentario: "Monstruo de rendimiento, DLSS 3 es revolucionario.", fecha: "2024-03-14"}
+                    ]
+                },
+                {
+                    id: 4,
+                    nombre: "ASUS TUF AMD Radeon RX 7900 XTX",
+                    categoria: "gpu",
+                    precio: 923.50,
+                    descripcion: "Tarjeta gráfica de alta gama con arquitectura RDNA 3, 24GB GDDR6",
+                    imagen: "https://m.media-amazon.com/images/I/81il2WdPPJL._AC_UF894,1000_QL80_.jpg",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "https://www.amazon.es/ASUS-Gaming-Radeon-7900-GDDR6/dp/B0BQCFCJK2?th=1"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/asus-tuf-rx7900xt-o20g-gaming-radeon-rx-7900-xt-20gb-graphics-card-triple-fans/p/27N-000M-00266?srsltid=AfmBOoomgzIZ2qkTZ92R_40IxiSl2JNqHtj8LlJFqlJL3nXHTy6-eOP1"},
+                    ],
+                    valoraciones: [
+                        {usuario: "Javier R.", rating: 4, comentario: "Excelente alternativa a NVIDIA, buen rendimiento por precio.", fecha: "2024-03-10"},
+                        {usuario: "Elena M.", rating: 4, comentario: "Buen software Adrenalin, drivers estables.", fecha: "2024-03-08"}
+                    ]
+                },
+                {
+                    id: 5,
+                    nombre: "Corsair Vengeance RGB 32GB 6000MHz",
+                    categoria: "ram",
+                    precio: 469.80,
+                    descripcion: "Memoria RAM DDR5 con iluminación RGB, CL30, optimizada para AMD",
+                    imagen: "https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024,f_auto/products/Memory/vengeance-rgb-amd-ddr5-blk-config/Gallery/Vengeance-RGB-DDR5-2UP-32GB-GRAY_03.webp",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "https://www.amazon.es/CORSAIR-VENGEANCE-6000MHz-Ordenador-Compatible/dp/B0BPTKD797/ref=sr_1_2_mod_primary_new?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1JFQKZD3TTLNH&dib=eyJ2IjoiMSJ9.JTMkOF4ekBXSSGepuCQ3lsyvKUH6TmDKfzoTyT85ESyz-txRemawPeI3T2gftyha5ilUHg_VeMvd5QndswRgvVkQaZktB0I_OuDQqxJJV6LFNZmlmM4I2-TlNjaphcOyZOTJRGOsdqQyfGUzPlcQjp1Qgxy1BUx0AF1jReFgI9dsVA21_v3lWwGVV2D6674ody5vnxZhVtw6Jl1R8A5TMqA-rx6GMBb0uydNgn-i6cVDWpI8nMgwCHCCx4wwvvtGM5Di52jnBUqY2LAIztJNgaPoxuOI6X9s0V1xpCpk7R8.eZW6QWIMXQiVJMZacXDD81Ymvno2JRd_hOYN2XQiw4k&dib_tag=se&keywords=Corsair%2BVengeance%2BRGB%2B32GB%2B6000MHz&qid=1770193542&s=computers&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=corsair%2Bvengeance%2Brgb%2B32gb%2B6000mhz%2Ccomputers%2C238&sr=1-2&th=1"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/corsair-vengeance-rgb-32gb-ddr5-6000-cas-latency-cl30-desktop-memory-gray/p/N82E16820982184"},
+                    ],
+                    valoraciones: [
+                        {usuario: "Roberto J.", rating: 5, comentario: "RGB espectacular y estabilidad perfecta.", fecha: "2024-03-16"},
+                        {usuario: "Carmen D.", rating: 4, comentario: "Funciona perfecto con mi Ryzen 7800X3D.", fecha: "2024-03-11"}
+                    ]
+                },
+                {
+                    id: 6,
+                    nombre: "Samsung 990 Pro 2TB SSD",
+                    categoria: "storage",
+                    precio: 296.80,
+                    descripcion: "SSD NVMe de alta velocidad para gamers y profesionales, PCIe 4.0",
+                    imagen: "https://m.media-amazon.com/images/I/61ZmzNzyMeL._AC_SX450_.jpg",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "https://www.amazon.es/Samsung-990-PRO-SAMSUNG-Pro/dp/B0BWNRPN59/ref=sr_1_5?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=ULH3WVNEVDXR&dib=eyJ2IjoiMSJ9.TikDZmQNYF-FwH2e5dWXrWjNFfiYMZSY5mnYZtoqtdwOYqOMH-WOmMYtTtEnyEP3LX5r7RjnxCtTPTypWjK3JfhRDgBDa8kQWcpj89O4a3PA3YuIuHooZAJzteokZUtzLav5U3dapTpMLM_-_22tAmBo_MVwoJxG3a6zBIf7geYofevVFw0uTyesXKY7pKM_l6QoTc5_KPMF0K1bT-RJmHTXK9_6QDAL41WPcPjHkSbErXKaMA2Lw6-9H4QNx7fx2dKn3fxibrJY78krLD4JQvsFEVqYu-WPra0R23Mln-c.nMbhJ9JEQrhB83iWRUqA0flokJQMuYKAKsmW7PENZEQ&dib_tag=se&keywords=Samsung+990+Pro+2TB+NVMe+SSD&qid=1770193791&sprefix=samsung+990+pro+2tb+nvme+ssd%2Caps%2C280&sr=8-5"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/samsung-2tb-990-pro-nvme-2-0/p/N82E16820147861"},
+                    ],
+                    valoraciones: [
+                        {usuario: "Ricardo M.", rating: 5, comentario: "Velocidades increíbles, carga juegos al instante.", fecha: "2024-03-13"},
+                        {usuario: "Beatriz N.", rating: 5, comentario: "El SSD más rápido que he tenido, muy recomendable.", fecha: "2024-03-09"}
+                    ]
+                },
+                {
+                    id: 7,
+                    nombre: "Corsair iCUE H150i Elite CAPELLIX XT",
+                    categoria: "refrigeracion",
+                    precio: 399.00,
+                    descripcion: "Refrigeración líquida AIO 360mm con RGB CAPELLIX y pantalla LCD",
+                    imagen: "https://c1.neweggimages.com/productimage/nb1280/35-181-335-01.png",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "https://www.amazon.es/Corsair-H150i-Elite-Refrigerador-L%C3%ADquido/dp/B0BQWTMJ7F/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=5XAIS6NOYHP5&dib=eyJ2IjoiMSJ9.cGDZNqgekgRp-I5rHcxACu7lsJoANtASRidzEZEVQIgwshkkot_2UKsIF0f0PySEXMsL69L_kYMKLi6n77gZYuMsyIyMRhnE3irrvORR1zFm2hsSItN5rAMyZ8queIj_qYMUCu4Smo7PTsX5s_IexUvdKOHT49pYQkNldda89uBd1idPT7WR4gUXvb2jcn93LtTgYopbPnp2e5CIZoQILfmymBSjkYupcKQEbxvMmZIBrm92NEiO81DFc5osXGb5A7q2sG5872nvyGlygG2yJEnJLitVwIZua9CpsoO6MDs.54hSfszgGFjR53xKLd8REyuEKi1zSgXEDVcTG6kNAfo&dib_tag=se&keywords=CORSAIR%2BiCUE%2BH150i%2BELITE%2BCAPELLIX%2BXT%2BLiquid%2BCPU%2BCooler&qid=1770194068&s=computers&sprefix=corsair%2Bicue%2Bh150i%2Belite%2Bcapellix%2Bxt%2Bliquid%2Bcpu%2Bcooler%2Ccomputers%2C249&sr=1-1&th=1"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/corsair-liquid-cooling-397mm-amd-am5-am4-strx4-intel-1700-1200-115x-2066-2011-3-2011-white/p/N82E16835181335"},
+                    ],
+                    valoraciones: [
+                        {usuario: "Pedro M.", rating: 5, comentario: "Mantiene mi i9 a 70°C en carga máxima. Excelente.", fecha: "2024-03-17"},
+                        {usuario: "Lucía H.", rating: 4, comentario: "El RGB es espectacular, software iCUE muy completo.", fecha: "2024-03-12"}
+                    ]
+                },
+                {
+                    id: 8,
+                    nombre: "Corsair RM1000x Shift",
+                    categoria: "alimentacion",
+                    precio: 215.32,
+                    descripcion: "Fuente de alimentación 1000W 80 Plus Gold, modular, conexiones laterales",
+                    imagen: "https://m.media-amazon.com/images/I/81n-ipg7MaL._AC_SY450_.jpg",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "https://www.amazon.es/Corsair-RM1000x-Alimentaci%C3%B3n-Totalmente-Modular/dp/B0BPSWXKSB?th=1"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/corsair-rm1000x-shift-atx-atx-3-0-compatible-1000-w-80-plus-gold-certified-power-supply-cp-9020253-na/p/N82E16817139303?srsltid=AfmBOooFuGeuTpNL_GI-apGg8aZUx8LaRGCsAymsbR8sfFmw0ks1SpMt"},
+                    ],
+                    valoraciones: [
+                        {usuario: "Diego N.", rating: 5, comentario: "Las conexiones laterales facilitan mucho el cable management.", fecha: "2024-03-14"},
+                        {usuario: "Patricia L.", rating: 5, comentario: "Totalmente silenciosa y eficiente. Muy recomendable.", fecha: "2024-03-10"}
+                    ]
+                },
+                {
+                    id: 9,
+                    nombre: "ASUS ROG Strix X670E-E Gaming WiFi",
+                    categoria: "motherboard",
+                    precio: 559.90,
+                    descripcion: "Placa base AM5 para Ryzen 7000, PCIe 5.0, WiFi 6E, RGB Aura Sync",
+                    imagen: "https://m.media-amazon.com/images/I/81ohPDfik0L._AC_SY300_SX300_QL70_ML2_.jpg",
+                    enlacesCompra: [
+                        {tienda: "Amazon", url: "https://www.amazon.es/ASUS-Strix-X670E-Gaming-WiFi/dp/B0BF5D8QXC/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3HH4GSZCY0SZ6&dib=eyJ2IjoiMSJ9.s5DvFMxIwLziqZRwshAvjbXdXZaRbEYmY_If6aXgV3jsUxpU15fArSH_j2HG_7SCVqvWAOo5LcHsjutSw2QowAEvk2X6-EbSCkskZ7sa8irwTf30yDGA950qXoKB9xX0Ru82zbZhYJ5RGOwbMtfC_QeVOuMHuDMfendCU2ZsC2v2mLDG-1KdkELfftlJRfVmZoze805eQPNeTSb4rRXTVmnmi-eNTKwgSYZp503j5jljoJwqoFiv-TPW4mHa74ndq5Gwe80NuCzYVtO90g9FxIkmw-WycpiYfJcAbtQRfSQ.yJFw0lQ-7xifRMe9S_JLrudvl4O2nd5zAB4BM7RlutI&dib_tag=se&keywords=ASUS%2BROG%2BStrix%2BX670E-E%2BGaming%2BWiFi&qid=1770194287&s=computers&sprefix=asus%2Brog%2Bstrix%2Bx670e-e%2Bgaming%2Bwifi%2Ccomputers%2C247&sr=1-1&th=1"},
+                        {tienda: "Newegg", url: "https://www.newegg.com/asus-rog-strix-x670e-e-gaming-wifi-atx-amd-motherboard-amd-x670e-am5/p/N82E16813119581R?srsltid=AfmBOooevqVqx5QQeasB-mh6pHk7msu8gEgBi5OMlrn57pWxyVf3UH9u"},
+                    ],
+                    valoraciones: [
+                        {usuario: "Cristina O.", rating: 5, comentario: "Características completas, excelente para overclocking.", fecha: "2024-03-15"},
+                        {usuario: "Gabriel S.", rating: 4, comentario: "BIOS muy completo, WiFi 6E funciona perfectamente.", fecha: "2024-03-11"}
+                    ]
+                }
+            ],
+            users: [
+                {
+                    id: 1,
+                    name: "Mónica Blanco",
+                    email: "monica@veredict.com",
+                    password: "1234560",
+                    bio: "Entusiasta del hardware y software. Especialista en workpress",
+                    posts: 8,
+                    likes: 156,
+                    followers: 342
+                },
+                {
+                    id: 2,
+                    name: "Candela Torrejón",
+                    email: "candela@veredict.com",
+                    password: "12345670",
+                    bio: "Especialista en builds gaming y streaming. Reviewer de componentes.",
+                    posts: 12,
+                    likes: 289,
+                    followers: 527
+                }
+            ],
+            isAITyping: false
+        };
+
+        // Elementos del DOM
+        const authModal = document.getElementById('auth-modal');
+        const authLink = document.getElementById('auth-link');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const searchResults = document.getElementById('search-results');
+        const nuevaOpinionForm = document.getElementById('nueva-opinion');
+        const profileName = document.getElementById('profile-name');
+        const profileBio = document.getElementById('profile-bio');
+        const statPosts = document.getElementById('stat-posts');
+        const statLikes = document.getElementById('stat-likes');
+        const statFollowers = document.getElementById('stat-followers');
+        const userPosts = document.getElementById('user-posts');
+        const profilePostsTitle = document.getElementById('profile-posts-title');
+        const postsContainer = document.getElementById('posts-container');
+        const authErrorMessage = document.getElementById('auth-error-message');
+        const authSuccessMessage = document.getElementById('auth-success-message');
+        const googleLoginBtn = document.getElementById('google-login');
+        const forgotPasswordLink = document.getElementById('forgot-password');
+        const goToLoginLink = document.getElementById('go-to-login');
+        const rememberCheckbox = document.getElementById('remember');
+        
+        // Elementos del modal de compartir
+        const shareModal = document.getElementById('share-modal');
+        const closeShareModal = document.querySelector('.close-share-modal');
+        const shareLink = document.getElementById('share-link');
+        const copyLinkBtn = document.getElementById('copy-link-btn');
+        const copySuccess = document.getElementById('copy-success');
+        const shareOptions = document.querySelectorAll('.share-option');
+
+        // Elementos del carrito
+        const cartCount = document.getElementById('cart-count');
+        const cartEmptyMessage = document.getElementById('cart-empty-message');
+        const cartContent = document.getElementById('cart-content');
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartSubtotal = document.getElementById('cart-subtotal');
+        const cartShipping = document.getElementById('cart-shipping');
+        const cartTax = document.getElementById('cart-tax');
+        const cartTotal = document.getElementById('cart-total');
+        const continueShoppingBtn = document.getElementById('continue-shopping-btn');
+        const checkoutBtn = document.getElementById('checkout-btn');
+
+        // Elementos del pago
+        const checkoutContent = document.getElementById('checkout-content');
+        const checkoutSummary = document.getElementById('checkout-summary');
+        const checkoutTotal = document.getElementById('checkout-total');
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        const creditCardForm = document.getElementById('credit-card-form');
+        const paypalInfo = document.getElementById('paypal-info');
+        const transferInfo = document.getElementById('transfer-info');
+        const cardNumber = document.getElementById('card-number');
+        const cardExpiry = document.getElementById('card-expiry');
+        const cardCVV = document.getElementById('card-cvv');
+        const cardName = document.getElementById('card-name');
+        const shippingAddress = document.getElementById('shipping-address');
+        const shippingNotes = document.getElementById('shipping-notes');
+        const termsCheckbox = document.getElementById('terms-checkbox');
+        const backToCartBtn = document.getElementById('back-to-cart-btn');
+        const confirmPurchaseBtn = document.getElementById('confirm-purchase-btn');
+        const transferReference = document.getElementById('transfer-reference');
+
+        // Elementos de confirmación
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const orderDetailsContent = document.getElementById('order-details-content');
+        const trackingNumber = document.getElementById('tracking-number');
+        const closeConfirmationModal = document.getElementById('close-confirmation-modal');
+
+        // Menú hamburguesa
+        const menuToggle = document.getElementById('menu-toggle');
+        const mainNav = document.getElementById('main-nav');
+
+        // Tienda
+        const tiendaSearchInput = document.getElementById('tienda-search-input');
+        const tiendaSearchBtn = document.getElementById('tienda-search-btn');
+        const tiendaProductos = document.getElementById('tienda-productos');
+        const tiendaCategoryButtons = document.querySelectorAll('#tienda .category-btn');
+
+        // Botón de modo oscuro
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+
+        // ===== FUNCIONES PARA MODO OSCURO =====
+        
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('veredict-theme') || 'dark';
+            if (savedTheme === 'dark') {
+                enableDarkMode();
+            } else {
+                enableLightMode();
+            }
+        }
+        
+        function enableDarkMode() {
+            document.body.classList.add('dark-mode');
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Modo Claro';
+            localStorage.setItem('veredict-theme', 'dark');
+            
+            // Cambiar logos
+            document.querySelectorAll('.logo-img, .modal-logo-img').forEach(img => {
+                if (img.src.includes('logo2.png')) {
+                    img.src = img.src.replace('logo2.png', 'logodark.png');
+                }
+            });
+        }
+
+        function enableLightMode() {
+            document.body.classList.remove('dark-mode');
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Modo Oscuro';
+            localStorage.setItem('veredict-theme', 'light');
+            
+            // Cambiar logos
+            document.querySelectorAll('.logo-img, .modal-logo-img').forEach(img => {
+                if (img.src.includes('logodark.png')) {
+                    img.src = img.src.replace('logodark.png', 'logo2.png');
+                }
+            });
+        }
+        
+        function toggleTheme() {
+            if (document.body.classList.contains('dark-mode')) {
+                enableLightMode();
+            } else {
+                enableDarkMode();
+            }
+        }
+
+        // ===== FUNCIONES PARA CARRITO =====
+        
+        function updateCartCount() {
+            const totalItems = appState.cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            // Guardar carrito en localStorage
+            if (appState.currentUser) {
+                localStorage.setItem(`veredict_cart_${appState.currentUser.id}`, JSON.stringify(appState.cart));
+            }
+        }
+        
+        function addToCart(productId, quantity = 1) {
+            if (!appState.currentUser) {
+                showNotification('Debes iniciar sesión para añadir productos al carrito.', 'error');
+                openAuthModal();
+                return false;
+            }
+            
+            const producto = appState.productos.find(p => p.id === productId);
+            if (!producto) return false;
+            
+            // Verificar si el producto ya está en el carrito
+            const existingItem = appState.cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                appState.cart.push({
+                    ...producto,
+                    quantity: quantity
+                });
+            }
+            
+            updateCartCount();
+            showNotification(`¡${producto.nombre} añadido al carrito!`, 'success');
+            
+            // Si estamos en la sección del carrito, actualizar la vista
+            if (document.getElementById('carrito').classList.contains('active')) {
+                renderCart();
+            }
+            
+            return true;
+        }
+        
+        function removeFromCart(productId) {
+            const index = appState.cart.findIndex(item => item.id === productId);
+            if (index !== -1) {
+                const producto = appState.cart[index];
+                appState.cart.splice(index, 1);
+                updateCartCount();
+                showNotification(`¡${producto.nombre} eliminado del carrito!`, 'info');
+                
+                // Si estamos en la sección del carrito, actualizar la vista
+                if (document.getElementById('carrito').classList.contains('active')) {
+                    renderCart();
+                }
+                
+                return true;
+            }
+            return false;
+        }
+        
+        function updateCartItemQuantity(productId, quantity) {
+            const item = appState.cart.find(item => item.id === productId);
+            if (item) {
+                if (quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    item.quantity = quantity;
+                    updateCartCount();
+                    
+                    // Si estamos en la sección del carrito, actualizar la vista
+                    if (document.getElementById('carrito').classList.contains('active')) {
+                        renderCart();
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        
+        function calculateCartTotals() {
+            const subtotal = appState.cart.reduce((total, item) => total + (item.precio * item.quantity), 0);
+            const shipping = 9.99;
+            const tax = subtotal * 0.10;
+            const total = subtotal + shipping + tax;
+            
+            return {
+                subtotal: subtotal.toFixed(2),
+                shipping: shipping.toFixed(2),
+                tax: tax.toFixed(2),
+                total: total.toFixed(2)
+            };
+        }
+        
+        function renderCart() {
+            if (appState.cart.length === 0) {
+                cartEmptyMessage.style.display = 'block';
+                cartContent.style.display = 'none';
+                return;
+            }
+            
+            cartEmptyMessage.style.display = 'none';
+            cartContent.style.display = 'block';
+            
+            // Renderizar items del carrito
+            cartItemsContainer.innerHTML = appState.cart.map(item => `
+                <div class="cart-item" data-product-id="${item.id}">
+                    <img src="${item.imagen}" alt="${item.nombre}" class="cart-item-img">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.nombre}</div>
+                        <div class="cart-item-price">€${item.precio.toFixed(2)}</div>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn decrease" data-product-id="${item.id}">-</button>
+                            <span class="quantity-value">${item.quantity}</span>
+                            <button class="quantity-btn increase" data-product-id="${item.id}">+</button>
+                            <button class="cart-item-remove" data-product-id="${item.id}">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Actualizar totales
+            const totals = calculateCartTotals();
+            cartSubtotal.textContent = `€${totals.subtotal}`;
+            cartTax.textContent = `€${totals.tax}`;
+            cartTotal.textContent = `€${totals.total}`;
+        }
+        
+        function renderCheckoutSummary() {
+            const totals = calculateCartTotals();
+            checkoutSummary.innerHTML = `
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span>€${totals.subtotal}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Envío:</span>
+                    <span>€${totals.shipping}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Impuestos (10%):</span>
+                    <span>€${totals.tax}</span>
+                </div>
+            `;
+
+            checkoutTotal.textContent = `€${totals.total}`;
+            
+            // Generar número de referencia para transferencia
+            const refNumber = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            transferReference.textContent = refNumber;
+            trackingNumber.textContent = refNumber;
+        }
+        
+        function processPayment() {
+            if (!appState.currentUser) {
+                showNotification('Debes iniciar sesión para realizar una compra.', 'error');
+                openAuthModal();
+                return false;
+            }
+            
+            if (appState.cart.length === 0) {
+                showNotification('Tu carrito está vacío.', 'error');
+                return false;
+            }
+            
+            if (!shippingAddress.value.trim()) {
+                showNotification('Por favor, ingresa una dirección de envío.', 'error');
+                shippingAddress.focus();
+                return false;
+            }
+            
+            if (!termsCheckbox.checked) {
+                showNotification('Debes aceptar los términos y condiciones.', 'error');
+                return false;
+            }
+            
+            // Obtener método de pago seleccionado
+            const selectedPayment = document.querySelector('.payment-method.selected').dataset.payment;
+            
+            // Validar información de tarjeta si es el método seleccionado
+            if (selectedPayment === 'credit') {
+                if (!cardNumber.value.trim() || cardNumber.value.replace(/\s/g, '').length !== 16) {
+                    showNotification('Número de tarjeta inválido.', 'error');
+                    cardNumber.focus();
+                    return false;
+                }
+                
+                if (!cardExpiry.value.trim() || !cardExpiry.value.match(/^\d{2}\/\d{2}$/)) {
+                    showNotification('Fecha de expiración inválida (MM/AA).', 'error');
+                    cardExpiry.focus();
+                    return false;
+                }
+                
+                if (!cardCVV.value.trim() || cardCVV.value.length !== 3) {
+                    showNotification('CVV inválido.', 'error');
+                    cardCVV.focus();
+                    return false;
+                }
+                
+                if (!cardName.value.trim()) {
+                    showNotification('Nombre en la tarjeta requerido.', 'error');
+                    cardName.focus();
+                    return false;
+                }
+            }
+            
+            // Procesar la compra
+            const orderNumber = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            const orderDate = new Date().toLocaleDateString('es-ES');
+            const paymentMethod = selectedPayment === 'credit' ? 'Tarjeta de crédito' : 
+                                selectedPayment === 'paypal' ? 'PayPal' : 'Transferencia bancaria';
+            
+            // Generar detalles del pedido para el modal de confirmación
+            orderDetailsContent.innerHTML = `
+                <p><strong>Número de pedido:</strong> VRD-${orderNumber}</p>
+                <p><strong>Fecha:</strong> ${orderDate}</p>
+                <p><strong>Método de pago:</strong> ${paymentMethod}</p>
+                <p><strong>Dirección de envío:</strong> ${shippingAddress.value}</p>
+                <p><strong>Productos:</strong></p>
+                <ul style="margin-left: 20px;">
+                    ${appState.cart.map(item => `<li>${item.nombre} x${item.quantity} - €${(item.precio * item.quantity).toFixed(2)}</li>`).join('')}
+                </ul>
+                <p><strong>Total:</strong> €${calculateCartTotals().total}</p>
+            `;
+            
+            // Limpiar carrito después de la compra
+            appState.cart = [];
+            updateCartCount();
+            
+            // Mostrar modal de confirmación
+            confirmationModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            return true;
+        }
+        
+        // ===== FUNCIONES PARA VALORACIONES =====
+        
+        function renderValoraciones(productoId) {
+            const producto = appState.productos.find(p => p.id === productoId);
+            if (!producto) return '';
+            
+            return `
+                <div class="valoraciones-container">
+                    <h3>Valoraciones de usuarios</h3>
+                    ${producto.valoraciones && producto.valoraciones.length > 0 ? 
+                        producto.valoraciones.map(val => `
+                            <div class="valoracion-item">
+                                <div class="valoracion-header">
+                                    <div class="valoracion-user">${val.usuario}</div>
+                                    <div class="rating">
+                                        ${'★'.repeat(val.rating)}${'☆'.repeat(5-val.rating)}
+                                        <span class="valoracion-date">${val.fecha}</span>
+                                    </div>
+                                </div>
+                                <div class="valoracion-content">${val.comentario}</div>
+                            </div>
+                        `).join('') : 
+                        '<p style="text-align: center; color: #718096; padding: 20px;">No hay valoraciones todavía. ¡Sé el primero en valorar este producto!</p>'
+                    }
+                    
+                    ${appState.currentUser ? `
+                        <div class="valoracion-form">
+                            <h4>Añadir tu valoración</h4>
+                            <div class="rating-stars" id="rating-stars-${productoId}">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
+                            <input type="text" class="form-control" id="valoracion-comentario-${productoId}" placeholder="Escribe tu valoración...">
+                            <button class="btn" style="margin-top: 10px;" onclick="submitValoracion(${productoId})">Enviar valoración</button>
+                        </div>
+                    ` : `
+                        <p style="text-align: center; color: #f4630c; padding: 10px;">
+                            <a href="#" class="auth-link" style="text-decoration: underline;">Inicia sesión</a> para añadir una valoración
+                        </p>
+                    `}
+                </div>
+            `;
+        }
+        
+        function submitValoracion(productoId) {
+            if (!appState.currentUser) {
+                showNotification('Debes iniciar sesión para añadir una valoración.', 'error');
+                openAuthModal();
+                return;
+            }
+            
+            const stars = document.querySelectorAll(`#rating-stars-${productoId} .star`);
+            let rating = 0;
+            stars.forEach(star => {
+                if (star.classList.contains('selected')) {
+                    rating = parseInt(star.dataset.rating);
+                }
+            });
+            
+            if (rating === 0) {
+                showNotification('Por favor, selecciona una puntuación.', 'error');
+                return;
+            }
+            
+            const comentario = document.getElementById(`valoracion-comentario-${productoId}`).value.trim();
+            if (!comentario) {
+                showNotification('Por favor, escribe un comentario.', 'error');
+                return;
+            }
+            
+            const producto = appState.productos.find(p => p.id === productoId);
+            if (producto) {
+                // Asegurar que valoraciones existe
+                if (!producto.valoraciones) {
+                    producto.valoraciones = [];
+                }
+                
+                producto.valoraciones.push({
+                    usuario: appState.currentUser.name,
+                    rating: rating,
+                    comentario: comentario,
+                    fecha: new Date().toISOString().split('T')[0]
+                });
+                
+                showNotification('¡Valoración añadida con éxito!', 'success');
+                
+                // Limpiar formulario
+                stars.forEach(star => star.classList.remove('selected'));
+                document.getElementById(`valoracion-comentario-${productoId}`).value = '';
+                
+                // Actualizar la vista si estamos viendo el producto
+                if (tiendaProductos) {
+                    renderProductos();
+                }
+            }
+        }
+        
+        // ===== FUNCIONES PARA TIENDA =====
+        
+        function renderProductos(productos = appState.productos, categoria = 'all') {
+            if (!tiendaProductos) return;
+            
+            let productosFiltrados = productos;
+            if (categoria !== 'all') {
+                productosFiltrados = productos.filter(producto => producto.categoria === categoria);
+            }
+            
+            tiendaProductos.innerHTML = productosFiltrados.map(producto => `
+                <div class="producto-card" data-producto-id="${producto.id}">
+                    <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-img">
+                    <div class="producto-info">
+                        <h3>${producto.nombre}</h3>
+                        <p class="producto-descripcion">${producto.descripcion}</p>
+                        <div class="producto-precio">€${producto.precio.toFixed(2)}</div>
+                        
+                        <!-- Rating promedio -->
+                        ${producto.valoraciones && producto.valoraciones.length > 0 ? 
+                            `<div class="rating" style="margin: 10px 0; font-size: 16px;">
+                                ${'★'.repeat(Math.round(producto.valoraciones.reduce((sum, val) => sum + val.rating, 0) / producto.valoraciones.length))}
+                                ${'☆'.repeat(5 - Math.round(producto.valoraciones.reduce((sum, val) => sum + val.rating, 0) / producto.valoraciones.length))}
+                                <span class="rating-value">(${producto.valoraciones.length})</span>
+                            </div>` : ''
+                        }
+                        
+                        <!-- Enlaces de compra -->
+                        <div class="external-links">
+                            ${producto.enlacesCompra.map(enlace => `
+                                <a href="${enlace.url}" target="_blank" class="external-link">
+                                <span>🛒</span>
+                                <span>${enlace.tienda}</span>
+                                </a>
+                            `).join('')}
+                            </div>
+                            <button class="btn-comprar" data-producto-id="${producto.id}">Añadir al Carrito</button>
+                        </div>
+                </div>
+            `).join('');
+        }
+        
+        function mostrarValoraciones(productoId) {
+            const producto = appState.productos.find(p => p.id === productoId);
+            if (producto) {
+                const modalHTML = `
+                    <div class="share-modal-content">
+                        <div class="share-modal-header">
+                            <div class="share-modal-title">Valoraciones: ${producto.nombre}</div>
+                            <button class="close-share-modal" onclick="cerrarModalValoraciones()">&times;</button>
+                        </div>
+                        ${renderValoraciones(productoId)}
+                    </div>
+                `;
+                
+                // Crear modal temporal
+                const modal = document.createElement('div');
+                modal.className = 'share-modal';
+                modal.style.display = 'flex';
+                modal.innerHTML = modalHTML;
+                document.body.appendChild(modal);
+                document.body.style.overflow = 'hidden';
+                
+                // Configurar estrellas interactivas
+                setTimeout(() => {
+                    const stars = modal.querySelectorAll('.star');
+                    stars.forEach(star => {
+                        star.addEventListener('click', function() {
+                            const rating = parseInt(this.dataset.rating);
+                            stars.forEach(s => {
+                                if (parseInt(s.dataset.rating) <= rating) {
+                                    s.classList.add('selected');
+                                } else {
+                                    s.classList.remove('selected');
+                                }
+                            });
+                        });
+                    });
+                }, 100);
+            }
+        }
+        
+        function cerrarModalValoraciones() {
+            const modal = document.querySelector('.share-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        function buscarProductosTienda(termino) {
+            if (!termino.trim()) {
+                renderProductos();
+                return;
+            }
+            
+            const terminoLower = termino.toLowerCase();
+            const productosFiltrados = appState.productos.filter(producto => 
+                producto.nombre.toLowerCase().includes(terminoLower) ||
+                producto.descripcion.toLowerCase().includes(terminoLower) ||
+                producto.categoria.toLowerCase().includes(terminoLower)
+            );
+            
+            renderProductos(productosFiltrados);
+        }
+        
+        // ===== FUNCIONES DE AUTENTICACIÓN =====
+        
+        function openAuthModal() {
+            authModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAuthModal() {
+            authModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            hideAuthMessages();
+        }
+
+        function switchAuthTab(tabName) {
+            authTabs.forEach(tab => {
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            authForms.forEach(form => {
+                if (form.id === `${tabName}-form`) {
+                    form.classList.add('active');
+                } else {
+                    form.classList.remove('active');
+                }
+            });
+            
+            hideAuthMessages();
+        }
+
+        function showAuthMessage(type, text) {
+            hideAuthMessages();
+            
+            if (type === 'error') {
+                authErrorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${text}`;
+                authErrorMessage.style.display = 'block';
+            } else if (type === 'success') {
+                authSuccessMessage.innerHTML = `<i class="fas fa-check-circle"></i> ${text}`;
+                authSuccessMessage.style.display = 'block';
+            }
+        }
+
+        function hideAuthMessages() {
+            authErrorMessage.style.display = 'none';
+            authSuccessMessage.style.display = 'none';
+        }
+
+        function loginUser(email, password) {
+            const user = appState.users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                appState.currentUser = user;
+                
+                // Guardar en localStorage si "Recordarme" está activado
+                if (rememberCheckbox.checked) {
+                    localStorage.setItem('veredict_user', JSON.stringify(user));
+                }
+                
+                // Cargar carrito del usuario desde localStorage
+                const savedCart = localStorage.getItem(`veredict_cart_${user.id}`);
+                if (savedCart) {
+                    appState.cart = JSON.parse(savedCart);
+                    updateCartCount();
+                }
+                
+                updateUIForUser();
+                closeAuthModal();
+                showNotification(`¡Bienvenido de nuevo, ${user.name}!`, 'success');
+                
+                // **AGREGA ESTAS LÍNEAS PARA RE-RENDERIZAR LAS PUBLICACIONES:**
+                if (postsContainer) {
+                    renderPosts(appState.posts, false);
+                }
+                if (searchResults) {
+                    renderSearchResults(appState.posts);
+                }
+                
+                return true;
+            }
+            
+            return false;
+        }
+        
+    
+        function registerUser(name, email, password, confirmPassword) {
+            // Validaciones
+            if (password !== confirmPassword) {
+                showAuthMessage('error', 'Las contraseñas no coinciden.');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                showAuthMessage('error', 'La contraseña debe tener al menos 6 caracteres.');
+                return false;
+            }
+            
+            // Verificar si el usuario ya existe
+            if (appState.users.find(u => u.email === email)) {
+                showAuthMessage('error', 'Ya existe un usuario con este email.');
+                return false;
+            }
+            
+            // Generar avatar aleatorio
+            const randomId = Math.floor(Math.random() * 70) + 1;
+            
+            // Crear nuevo usuario
+            const newUser = {
+                id: appState.users.length + 1,
+                name,
+                email,
+                password,
+                avatar: `https://i.pravatar.cc/40?img=${randomId}`,
+                bio: "Nuevo usuario de Veredict. ¡Estoy emocionado de compartir mis opiniones sobre hardware!",
+                posts: 0,
+                likes: 0,
+                followers: 0
+            };
+            
+            appState.users.push(newUser);
+            appState.currentUser = newUser;
+            
+            updateUIForUser();
+            closeAuthModal();
+            showNotification(`¡Cuenta creada exitosamente, ${name}!`, 'success');
+            
+            // **AGREGA ESTAS LÍNEAS PARA RE-RENDERIZAR LAS PUBLICACIONES:**
+            if (postsContainer) {
+                renderPosts(appState.posts, false);
+            }
+            if (searchResults) {
+                renderSearchResults(appState.posts);
+            }
+            
+            return true;
+        }
+
+        function logoutUser() {
+            appState.currentUser = null;
+            localStorage.removeItem('veredict_user');
+            updateUIForUser();
+            showNotification('¡Sesión cerrada correctamente!', 'info');
+            
+            // Limpiar carrito al cerrar sesión
+            appState.cart = [];
+            updateCartCount();
+            if (document.getElementById('carrito').classList.contains('active')) {
+                renderCart();
+            }
+            
+            // **AGREGA ESTAS LÍNEAS PARA RE-RENDERIZAR LAS PUBLICACIONES:**
+            if (postsContainer) {
+                renderPosts(appState.posts, false);
+            }
+            if (searchResults) {
+                renderSearchResults(appState.posts);
+            }
+        }
+
+        function updateUIForUser() {
+            if (appState.currentUser) {
+                authLink.textContent = "Cerrar Sesión";
+                
+                // Actualizar perfil
+                profileName.textContent = appState.currentUser.name;
+                profileBio.textContent = appState.currentUser.bio;
+                statPosts.textContent = appState.currentUser.posts;
+                statLikes.textContent = appState.currentUser.likes;
+                statFollowers.textContent = appState.currentUser.followers;
+                
+                // Mostrar publicaciones del usuario
+                const userPostsData = appState.posts.filter(post => post.userId === appState.currentUser.id);
+                if (userPostsData.length > 0) {
+                    profilePostsTitle.textContent = "Tus Opiniones";
+                    userPosts.innerHTML = userPostsData.map(post => `
+                        <div class="post-card" data-post-id="${post.id}">
+                            <div class="post-header">
+                                <div class="post-avatar">
+                                    <img src="${post.userAvatar}" alt="Usuario">
+                                </div>
+                                <div>
+                                    <div class="post-user">${post.userName}</div>
+                                    <div class="post-time">${post.time}</div>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                <span class="component-tag">${post.category.toUpperCase()}</span>
+                                <h3>${post.title}</h3>
+                                <div class="rating">
+                                    ${'★'.repeat(post.rating)}${'☆'.repeat(5-post.rating)}
+                                    <span class="rating-value">${post.rating}/5</span>
+                                </div>
+                                <p>${post.content}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    profilePostsTitle.textContent = "Tus Opiniones";
+                    userPosts.innerHTML = '<p>Aún no has publicado ninguna opinión. <a href="#" class="nav-link" data-section="crear">¡Crea tu primera opinión!</a></p>';
+                }
+            } else {
+                authLink.textContent = "Iniciar Sesión";
+                
+                // Restablecer perfil
+                profileName.textContent = "Inicia sesión para ver tu perfil";
+                profileBio.textContent = "";
+                statPosts.textContent = "0";
+                statLikes.textContent = "0";
+                statFollowers.textContent = "0";
+                profilePostsTitle.textContent = "Tus Opiniones";
+                userPosts.innerHTML = '<p>Inicia sesión para ver y crear tus opiniones.</p>';
+            }
+        }
+        
+        // ===== FUNCIONES DE PUBLICACIONES =====
+        
+        function renderPosts(posts = appState.posts, isSearchPage = false) {
+            if (!postsContainer) return;
+            
+            let postsToRender = posts;
+            
+            // Si estamos en la página de inicio, mostrar solo CPU, GPU y RAM
+            if (!isSearchPage) {
+                postsToRender = posts.filter(post => 
+                    post.category === 'cpu' || 
+                    post.category === 'gpu' || 
+                    post.category === 'ram'
+                );
+            }
+            
+            if (postsToRender.length === 0) {
+                postsContainer.innerHTML = '<p>No hay publicaciones disponibles.</p>';
+                return;
+            }
+            
+            postsContainer.innerHTML = postsToRender.map(post => `
+                <div class="post-card" data-post-id="${post.id}" data-category="${post.category}">
+                    <div class="post-header">
+                        <div class="post-avatar">
+                            <img src="${post.userAvatar}" alt="Usuario">
+                        </div>
+                        <div>
+                            <div class="post-user">${post.userName}</div>
+                            <div class="post-time">${post.time}</div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <span class="component-tag">${post.category.toUpperCase()}</span>
+                        <h3>${post.title}</h3>
+                        <div class="rating">
+                            ${'★'.repeat(post.rating)}${'☆'.repeat(5-post.rating)}
+                            <span class="rating-value">${post.rating}/5</span>
+                        </div>
+                        <p>${post.content}</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="post-action ${post.userLiked ? 'active' : ''}" data-action="like" data-post-id="${post.id}">
+                            <i>👍</i>
+                            <span class="like-count">${post.likes}</span>
+                        </button>
+                        <button class="post-action" data-action="comment-toggle" data-post-id="${post.id}">
+                            <i>💬</i>
+                            <span>Comentar (${post.comments.length})</span>
+                        </button>
+                        <button class="post-action" data-action="share" data-post-id="${post.id}">
+                            <i>🔄</i>
+                            <span>Compartir</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Sección de comentarios (oculta por defecto) -->
+                    <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                        <div class="comments-container" id="comments-container-${post.id}">
+                            ${post.comments.length > 0 ? 
+                                post.comments.map(comment => `
+                                    <div class="comment">
+                                        <div class="comment-header">
+                                            <div class="comment-avatar">
+                                                <img src="${comment.userAvatar}" alt="Usuario">
+                                            </div>
+                                            <div class="comment-user">${comment.userName}</div>
+                                            <div class="comment-time">${comment.time}</div>
+                                        </div>
+                                        <div class="comment-content">${comment.content}</div>
+                                    </div>
+                                `).join('') : 
+                                '<p style="text-align: center; color: #718096; padding: 20px;">No hay comentarios todavía. ¡Sé el primero en comentar!</p>'
+                            }
+                        </div>
+                        
+                        ${appState.currentUser ? `
+                            <form class="comment-form" id="comment-form-${post.id}">
+                                <input type="text" class="comment-input" placeholder="Escribe tu comentario..." required>
+                                <button type="submit" class="comment-btn">Comentar</button>
+                            </form>
+                        ` : `
+                            <p style="text-align: center; color: #f4630c; padding: 10px;">
+                                <a href="#" class="auth-link" style="text-decoration: underline;">Inicia sesión</a> para comentar
+                            </p>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function performSearch(searchTerm = '', category = 'all') {
+            let filteredPosts = appState.posts;
+            
+            // Filtrar por categoría si no es "all"
+            if (category !== 'all') {
+                filteredPosts = filteredPosts.filter(post => post.category === category);
+            }
+            
+            // Filtrar por término de búsqueda si existe
+            if (searchTerm.trim()) {
+                const searchLower = searchTerm.toLowerCase();
+                filteredPosts = filteredPosts.filter(post => 
+                    post.component.toLowerCase().includes(searchLower) ||
+                    post.title.toLowerCase().includes(searchLower) ||
+                    post.content.toLowerCase().includes(searchLower) ||
+                    post.userName.toLowerCase().includes(searchLower) ||
+                    post.category.toLowerCase().includes(searchLower)
+                );
+            }
+            
+            return filteredPosts;
+        }
+        
+        function renderSearchResults(posts = appState.posts, searchTerm = '', category = 'all') {
+            if (!searchResults) return;
+            
+            const filteredPosts = performSearch(searchTerm, category);
+            
+            if (filteredPosts.length > 0) {
+                searchResults.innerHTML = filteredPosts.map(post => `
+                    <div class="post-card" data-post-id="${post.id}" data-category="${post.category}">
+                        <div class="post-header">
+                            <div class="post-avatar">
+                                <img src="${post.userAvatar}" alt="Usuario">
+                            </div>
+                            <div>
+                                <div class="post-user">${post.userName}</div>
+                                <div class="post-time">${post.time}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <span class="component-tag">${post.category.toUpperCase()}</span>
+                            <h3>${post.title}</h3>
+                            <div class="rating">
+                                ${'★'.repeat(post.rating)}${'☆'.repeat(5-post.rating)}
+                                <span class="rating-value">${post.rating}/5</span>
+                            </div>
+                            <p>${post.content}</p>
+                        </div>
+                        <div class="post-actions">
+                            <button class="post-action ${post.userLiked ? 'active' : ''}" data-action="like" data-post-id="${post.id}">
+                                <i>👍</i>
+                                <span class="like-count">${post.likes}</span>
+                            </button>
+                            <button class="post-action" data-action="comment-toggle" data-post-id="${post.id}">
+                                <i>💬</i>
+                                <span>Comentar (${post.comments.length})</span>
+                            </button>
+                            <button class="post-action" data-action="share" data-post-id="${post.id}">
+                                <i>🔄</i>
+                                <span>Compartir</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                searchResults.innerHTML = `
+                    <div class="info-message">
+                        <p>No se encontraron resultados para tu búsqueda "${searchTerm}". Intenta con otros términos o categorías.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // ===== FUNCIONES DE COMENTARIOS =====
+        
+        function addComment(postId, commentText) {
+            if (!appState.currentUser) {
+                showNotification('Debes iniciar sesión para comentar.', 'error');
+                openAuthModal();
+                return false;
+            }
+
+            const post = appState.posts.find(p => p.id === postId);
+            if (post) {
+                const newComment = {
+                    id: post.comments.length + 1,
+                    userId: appState.currentUser.id,
+                    userName: appState.currentUser.name,
+                    userAvatar: appState.currentUser.avatar,
+                    content: commentText,
+                    time: "Hace unos momentos"
+                };
+
+                post.comments.push(newComment);
+                
+                // Actualizar la vista de comentarios
+                updateCommentsView(postId);
+                
+                showNotification('¡Comentario añadido con éxito!', 'success');
+                return true;
+            }
+            
+            return false;
+        }
+
+        function updateCommentsView(postId) {
+            const post = appState.posts.find(p => p.id === postId);
+            if (!post) return;
+
+            const commentsContainer = document.getElementById(`comments-container-${postId}`);
+            if (commentsContainer) {
+                commentsContainer.innerHTML = post.comments.length > 0 ? 
+                    post.comments.map(comment => `
+                        <div class="comment">
+                            <div class="comment-header">
+                                <div class="comment-avatar">
+                                    <img src="${comment.userAvatar}" alt="Usuario">
+                                </div>
+                                <div class="comment-user">${comment.userName}</div>
+                                <div class="comment-time">${comment.time}</div>
+                            </div>
+                            <div class="comment-content">${comment.content}</div>
+                        </div>
+                    `).join('') : 
+                    '<p style="text-align: center; color: #718096; padding: 20px;">No hay comentarios todavía. ¡Sé el primero en comentar!</p>';
+            }
+        }
+
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            if (commentsSection) {
+                if (commentsSection.style.display === 'block') {
+                    commentsSection.style.display = 'none';
+                } else {
+                    commentsSection.style.display = 'block';
+                    // Asegurarse de que los comentarios estén actualizados
+                    updateCommentsView(postId);
+                }
+            }
+        }
+        
+        // ===== FUNCIONES DE COMPARTIR =====
+        
+        function openShareModal(postId) {
+            const post = appState.posts.find(p => p.id === postId);
+            if (post) {
+                const url = window.location.origin + window.location.pathname + `?post=${postId}`;
+                shareLink.value = url;
+                shareModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeShareModalFunc() {
+            shareModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // ===== FUNCIÓN DE NOTIFICACIONES =====
+        
+        function showNotification(message, type = 'info') {
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-icon">${type === 'success' ? '✓' : type === 'error' ? '✗' : 'i'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Estilos básicos para la notificación
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 20px';
+            notification.style.backgroundColor = type === 'success' ? '#4CAF50' : type === 'error' ? '#F44336' : '#2196F3';
+            notification.style.color = 'white';
+            notification.style.borderRadius = '5px';
+            notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            notification.style.zIndex = '10000';
+            notification.style.fontSize = '14px';
+            notification.style.transition = 'all 0.3s ease';
+            
+            document.body.appendChild(notification);
+            
+            // Eliminar después de 3 segundos
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-10px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // ===== INICIALIZACIÓN =====
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM cargado, inicializando aplicación...');
+            
+            // Inicializar tema
+            loadTheme();
+            
+            // Cargar usuario desde localStorage
+            const savedUser = localStorage.getItem('veredict_user');
+            if (savedUser) {
+                try {
+                    const userData = JSON.parse(savedUser);
+                    const user = appState.users.find(u => u.email === userData.email);
+                    if (user) {
+                        appState.currentUser = user;
+                        rememberCheckbox.checked = true;
+                        
+                        // Cargar carrito del usuario
+                        const savedCart = localStorage.getItem(`veredict_cart_${user.id}`);
+                        if (savedCart) {
+                            appState.cart = JSON.parse(savedCart);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error al cargar usuario guardado:', e);
+                }
+            }
+            
+            // Inicializar UI
+            updateUIForUser();
+            updateCartCount();
+            renderPosts(appState.posts, false);
+            renderSearchResults(appState.posts);
+            renderProductos();
+            
+            console.log('Aplicación inicializada correctamente');
+            
+            // Event listener para botón de tema
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Autenticación
+            authLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (appState.currentUser) {
+                    logoutUser();
+                } else {
+                    openAuthModal();
+                    switchAuthTab('login');
+                }
+            });
+            
+            // Cerrar modales al hacer clic fuera de ellos
+            window.addEventListener('click', function(e) {
+                if (e.target === authModal) {
+                    closeAuthModal();
+                }
+                if (e.target === shareModal) {
+                    closeShareModalFunc();
+                }
+                if (e.target === confirmationModal) {
+                    confirmationModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Tabs de autenticación
+            authTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchAuthTab(this.dataset.tab);
+                });
+            });
+            
+            // Formulario de login
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                if (!email || !password) {
+                    showAuthMessage('error', 'Por favor, completa todos los campos.');
+                    return;
+                }
+                
+                if (loginUser(email, password)) {
+                    showAuthMessage('success', '¡Inicio de sesión exitoso!');
+                } else {
+                    showAuthMessage('error', 'Credenciales incorrectas. Usa: carlos@veredict.com / 123456');
+                }
+            });
+            
+            // Formulario de registro
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('register-confirm-password').value;
+                
+                if (!name || !email || !password || !confirmPassword) {
+                    showAuthMessage('error', 'Por favor, completa todos los campos.');
+                    return;
+                }
+                
+                registerUser(name, email, password, confirmPassword);
+            });
+            
+            // Iniciar Sesión Google
+            googleLoginBtn.addEventListener('click', function() {
+                showAuthMessage('success', 'Redirigiendo a Google para autenticación...');
+                
+                // Simular autenticación con Google
+                setTimeout(() => {
+                    const randomUser = appState.users[Math.floor(Math.random() * appState.users.length)];
+                    if (loginUser(randomUser.email, randomUser.password)) {
+                        showAuthMessage('success', `¡Bienvenido con Google, ${randomUser.name}!`);
+                    }
+                }, 1500);
+            });
+        
+            // Olvidé mi contraseña
+            forgotPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value || prompt('Por favor, ingresa tu correo electrónico para recuperar tu contraseña:', '');
+                
+                if (email) {
+                    showAuthMessage('success', `Se ha enviado un enlace de recuperación a ${email}. Revisa tu bandeja de entrada.`);
+                }
+            });
+            
+            // Ir a login desde registro
+            goToLoginLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                switchAuthTab('login');
+            });
+            
+            // Búsqueda
+            searchBtn.addEventListener('click', function() {
+                const searchTerm = searchInput.value.trim();
+                const activeCategory = document.querySelector('#busqueda .category-btn.active').dataset.category;
+                renderSearchResults(appState.posts, searchTerm, activeCategory);
+            });
+            
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = searchInput.value.trim();
+                    const activeCategory = document.querySelector('#busqueda .category-btn.active').dataset.category;
+                    renderSearchResults(appState.posts, searchTerm, activeCategory);
+                }
+            });
+            
+            // Tienda
+            tiendaSearchBtn.addEventListener('click', function() {
+                buscarProductosTienda(tiendaSearchInput.value.trim());
+            });
+            
+            tiendaSearchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarProductosTienda(tiendaSearchInput.value.trim());
+                }
+            });
+            
+            tiendaCategoryButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tiendaCategoryButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const categoria = this.dataset.category;
+                    renderProductos(appState.productos, categoria);
+                });
+            });
+            
+            // Carrito
+            continueShoppingBtn.addEventListener('click', function() {
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                document.querySelector('[data-section="tienda"]').classList.add('active');
+                document.getElementById('tienda').classList.add('active');
+                renderProductos();
+            });
+            
+            checkoutBtn.addEventListener('click', function() {
+                if (!appState.currentUser) {
+                    showNotification('Debes iniciar sesión para proceder al pago.', 'error');
+                    openAuthModal();
+                    return;
+                }
+                
+                if (appState.cart.length === 0) {
+                    showNotification('Tu carrito está vacío.', 'error');
+                    return;
+                }
+                
+                // Navegar a sección de pago
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                
+                // Crear enlace para pago si no existe
+                let pagoLink = document.querySelector('[data-section="pago"]');
+                if (!pagoLink) {
+                    const li = document.createElement('li');
+                    pagoLink = document.createElement('a');
+                    pagoLink.href = '#';
+                    pagoLink.className = 'nav-link';
+                    pagoLink.dataset.section = 'pago';
+                    pagoLink.textContent = 'Pago';
+                    li.appendChild(pagoLink);
+                    document.querySelector('#main-nav ul').appendChild(li);
+                }
+                
+                pagoLink.classList.add('active');
+                document.getElementById('pago').classList.add('active');
+                renderCheckoutSummary();
+            });
+            
+            // Métodos de pago
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    paymentMethods.forEach(m => m.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    const paymentType = this.dataset.payment;
+                    creditCardForm.style.display = paymentType === 'credit' ? 'block' : 'none';
+                    paypalInfo.style.display = paymentType === 'paypal' ? 'block' : 'none';
+                    transferInfo.style.display = paymentType === 'transfer' ? 'block' : 'none';
+                });
+            });
+            
+            // Volver al carrito desde pago
+            backToCartBtn.addEventListener('click', function() {
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                document.querySelector('[data-section="carrito"]').classList.add('active');
+                document.getElementById('carrito').classList.add('active');
+                renderCart();
+            });
+            
+            // Confirmar compra
+            confirmPurchaseBtn.addEventListener('click', function() {
+                processPayment();
+            });
+            
+            // Cerrar modal de confirmación
+            closeConfirmationModal.addEventListener('click', function() {
+                confirmationModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                
+                // Regresar a la tienda
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                document.querySelector('[data-section="tienda"]').classList.add('active');
+                document.getElementById('tienda').classList.add('active');
+                renderProductos();
+            });
+            
+            // Formatear número de tarjeta
+            cardNumber.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{4})/g, '$1 ').trim();
+                e.target.value = value.substring(0, 19);
+            });
+            
+            // Formatear fecha de expiración
+            cardExpiry.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                e.target.value = value.substring(0, 5);
+            });
+            
+            // Solo números para CVV
+            cardCVV.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '').substring(0, 3);
+            });
+            
+            // Crear nueva opinión
+            if (nuevaOpinionForm) {
+                nuevaOpinionForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    if (!appState.currentUser) {
+                        showNotification('Debes iniciar sesión para crear una opinión.', 'error');
+                        openAuthModal();
+                        return;
+                    }
+                    
+                    const componente = document.getElementById('componente').value;
+                    const categoria = document.getElementById('categoria').value;
+                    const valoracion = parseInt(document.getElementById('valoracion').value);
+                    const titulo = document.getElementById('titulo').value;
+                    const contenido = document.getElementById('contenido').value;
+                    
+                    if (!componente || !categoria || !valoracion || !titulo || !contenido) {
+                        showNotification('Por favor, completa todos los campos.', 'error');
+                        return;
+                    }
+                    
+                    const newPost = {
+                        id: appState.posts.length + 1,
+                        userId: appState.currentUser.id,
+                        userName: appState.currentUser.name,
+                        userAvatar: appState.currentUser.avatar,
+                        component: componente,
+                        category: categoria,
+                        rating: valoracion,
+                        title: titulo,
+                        content: contenido,
+                        likes: 0,
+                        userLiked: false,
+                        comments: [],
+                        time: "Hace unos momentos"
+                    };
+                    
+                    appState.posts.unshift(newPost);
+                    appState.currentUser.posts++;
+                    
+                    // Limpiar formulario
+                    nuevaOpinionForm.reset();
+                    
+                    // Actualizar UI
+                    updateUIForUser();
+                    
+                    // Mostrar notificación de éxito
+                    showNotification('¡Opinión publicada con éxito!', 'success');
+                    
+                    // Redirigir a inicio
+                    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                    document.querySelector('[data-section="inicio"]').classList.add('active');
+                    document.getElementById('inicio').classList.add('active');
+                    renderPosts(appState.posts, false);
+                });
+            }
+            
+            // Navegación entre secciones
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remover clase active de todos los enlaces
+                    document.querySelectorAll('.nav-link').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // Añadir clase active al enlace clickeado
+                    this.classList.add('active');
+                    
+                    // Ocultar todas las secciones
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    // Mostrar la sección correspondiente
+                    const sectionId = this.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                        
+                        // Actualizar contenido según la sección
+                        if (sectionId === 'inicio') {
+                            renderPosts(appState.posts, false);
+                        } else if (sectionId === 'busqueda') {
+                            renderSearchResults(appState.posts);
+                        } else if (sectionId === 'tienda') {
+                            renderProductos();
+                        } else if (sectionId === 'carrito') {
+                            renderCart();
+                        } else if (sectionId === 'pago') {
+                            renderCheckoutSummary();
+                        }
+                    }
+                    
+                    // Cerrar menú en móvil
+                    if (window.innerWidth <= 768) {
+                        mainNav.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Botones de categorías en búsqueda
+            document.querySelectorAll('#busqueda .category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#busqueda .category-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const category = this.dataset.category;
+                    const searchTerm = searchInput.value.trim();
+                    renderSearchResults(appState.posts, searchTerm, category);
+                });
+            });
+            
+            // Menú hamburguesa
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    mainNav.classList.toggle('active');
+                    this.classList.toggle('active');
+                });
+            }
+            
+            // Cerrar menú al hacer clic fuera (solo en móvil)
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    if (mainNav && !mainNav.contains(e.target) && menuToggle && !menuToggle.contains(e.target) && mainNav.classList.contains('active')) {
+                        mainNav.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                    }
+                }
+            });
+            
+            // Compartir
+            if (closeShareModal) {
+                closeShareModal.addEventListener('click', closeShareModalFunc);
+            }
+            
+            if (copyLinkBtn) {
+                copyLinkBtn.addEventListener('click', function() {
+                    if (shareLink) {
+                        shareLink.select();
+                        shareLink.setSelectionRange(0, 99999);
+                        document.execCommand('copy');
+                        if (copySuccess) {
+                            copySuccess.style.display = 'block';
+                            setTimeout(() => {
+                                copySuccess.style.display = 'none';
+                            }, 2000);
+                        }
+                    }
+                });
+            }
+            
+            shareOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const type = this.dataset.shareType;
+                    const url = shareLink ? shareLink.value : window.location.href;
+                    const title = 'Mira esta opinión en Veredict';
+                    
+                    let shareUrl = '';
+                    switch(type) {
+                        case 'facebook':
+                            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                            break;
+                        case 'twitter':
+                            shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+                            break;
+                        case 'linkedin':
+                            shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`;
+                            break;
+                        case 'whatsapp':
+                            shareUrl = `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`;
+                            break;
+                        case 'email':
+                            shareUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`;
+                            break;
+                    }
+                    
+                    if (shareUrl) {
+                        if (type === 'email') {
+                            window.location.href = shareUrl;
+                        } else {
+                            window.open(shareUrl, '_blank', 'width=600,height=400');
+                        }
+                    }
+                });
+            });
+            
+            // Delegación de eventos para acciones dinámicas
+            document.addEventListener('click', function(e) {
+                // Me gusta, comentar, compartir en publicaciones
+                const postAction = e.target.closest('.post-action');
+                if (postAction) {
+                    const postId = parseInt(postAction.dataset.postId);
+                    const action = postAction.dataset.action;
+                    
+                    if (action === 'like') {
+                        if (!appState.currentUser) {
+                            showNotification('Debes iniciar sesión para dar me gusta.', 'error');
+                            openAuthModal();
+                            return;
+                        }
+                        
+                        const post = appState.posts.find(p => p.id === postId);
+                        if (post) {
+                            if (post.userLiked) {
+                                post.likes--;
+                                post.userLiked = false;
+                            } else {
+                                post.likes++;
+                                post.userLiked = true;
+                            }
+                            
+                            // Actualizar contador visual
+                            const likeCount = postAction.querySelector('.like-count');
+                            if (likeCount) {
+                                likeCount.textContent = post.likes;
+                            }
+                            
+                            if (post.userLiked) {
+                                postAction.classList.add('active');
+                            } else {
+                                postAction.classList.remove('active');
+                            }
+                        }
+                    } else if (action === 'comment-toggle') {
+                        toggleComments(postId);
+                    } else if (action === 'share') {
+                        openShareModal(postId);
+                    }
+                }
+                
+                // Añadir al carrito desde tienda
+                const addToCartBtn = e.target.closest('.btn-comprar');
+                if (addToCartBtn) {
+                    e.preventDefault();
+                    const productId = parseInt(addToCartBtn.dataset.productoId);
+                    addToCart(productId, 1);
+                }
+                
+                // Carrito: aumentar/disminuir cantidad
+                const quantityBtn = e.target.closest('.quantity-btn');
+                if (quantityBtn) {
+                    const productId = parseInt(quantityBtn.dataset.productId);
+                    const isIncrease = quantityBtn.classList.contains('increase');
+                    const isDecrease = quantityBtn.classList.contains('decrease');
+                    
+                    const item = appState.cart.find(item => item.id === productId);
+                    if (item) {
+                        if (isIncrease) {
+                            updateCartItemQuantity(productId, item.quantity + 1);
+                        } else if (isDecrease) {
+                            updateCartItemQuantity(productId, item.quantity - 1);
+                        }
+                    }
+                }
+                
+                // Carrito: eliminar producto
+                const removeBtn = e.target.closest('.cart-item-remove');
+                if (removeBtn) {
+                    const productId = parseInt(removeBtn.dataset.productId);
+                    removeFromCart(productId);
+                }
+                
+                // Enlaces de autenticación dentro de publicaciones
+                if (e.target.closest('.auth-link')) {
+                    e.preventDefault();
+                    openAuthModal();
+                    switchAuthTab('login');
+                }
+            });
+            
+            // Agrega event listener para formularios de comentarios
+            document.addEventListener('submit', function(e) {
+                const commentForm = e.target.closest('.comment-form');
+                if (commentForm) {
+                    e.preventDefault();
+                    
+                    const postId = parseInt(commentForm.id.replace('comment-form-', ''));
+                    const commentInput = commentForm.querySelector('.comment-input');
+                    const commentText = commentInput.value.trim();
+                    
+                    if (!commentText) {
+                        showNotification('Por favor, escribe un comentario.', 'error');
+                        return;
+                    }
+                    
+                    if (addComment(postId, commentText)) {
+                        commentInput.value = '';
+                        // Desplazar el scroll al nuevo comentario
+                        setTimeout(() => {
+                            const commentsContainer = document.getElementById(`comments-container-${postId}`);
+                            if (commentsContainer) {
+                                commentsContainer.scrollTop = commentsContainer.scrollHeight;
+                            }
+                        }, 100);
+                    }
+                }
+            });
+            
+            // Detectar tamaño de pantalla y ajustar menú
+            function checkScreenSize() {
+                if (window.innerWidth > 768) {
+                    if (mainNav) mainNav.classList.remove('active');
+                    if (menuToggle) menuToggle.classList.remove('active');
+                }
+            }
+            
+            // Ejecutar al redimensionar
+            window.addEventListener('resize', checkScreenSize);
+            
+            // Cargar post específico si hay parámetro en URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('post');
+            if (postId) {
+                // Buscar y mostrar el post específico
+                const post = appState.posts.find(p => p.id === parseInt(postId));
+                if (post) {
+                    // Mostrar en sección de búsqueda
+                    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                    document.querySelector('[data-section="busqueda"]').classList.add('active');
+                    document.getElementById('busqueda').classList.add('active');
+                    
+                    if (searchInput) searchInput.value = post.component;
+                    renderSearchResults([post]);
+                }
+            }
+        });
+
+        // Manejar errores no capturados
+        window.addEventListener('error', function(e) {
+            console.error('Error no capturado:', e.error);
+            showNotification('Ha ocurrido un error en la aplicación.', 'error');
+        });
+        
+        // Hacer funciones accesibles globalmente
+        window.submitValoracion = submitValoracion;
+        window.mostrarValoraciones = mostrarValoraciones;
+        window.cerrarModalValoraciones = cerrarModalValoraciones;
+    </script>
+</body>
+</html>

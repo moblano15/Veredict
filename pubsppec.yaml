@@ -1,0 +1,6 @@
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.0
+  shared_preferences: ^2.0.0
+  # Otras dependencias que puedas necesitar
